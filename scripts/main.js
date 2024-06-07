@@ -198,9 +198,9 @@ function getBackgrounds() {
         const files = data;
         Backgrounds = files;
         window.CurrentBG = Math.floor(Math.random() * Backgrounds.length);
-        document.getElementById('body').style.backgroundImage = `url(/assets/backgrounds/${Backgrounds[CurrentBG]})`;
+        document.getElementById('body').style.backgroundImage = `url(/assets/Backgrounds/${Backgrounds[CurrentBG]})`;
         for (image of Backgrounds) {
-            document.getElementById("head").innerHTML += `<link rel="preload" href="/assets/backgrounds/${image}" as="image">`;
+            document.getElementById("head").innerHTML += `<link rel="preload" href="/assets/Backgrounds/${image}" as="image">`;
         }
     });
 }
@@ -209,10 +209,10 @@ function swapBackground() {
         console.log("Attempting to switch Background")
         if (CurrentBG + 1 == Backgrounds.length) {
             CurrentBG = 0;
-            document.getElementById('body').style.backgroundImage = `url(/assets/backgrounds/${Backgrounds[CurrentBG]})`;
+            document.getElementById('body').style.backgroundImage = `url(/assets/Backgrounds/${Backgrounds[CurrentBG]})`;
         } else {
             CurrentBG += 1;
-            document.getElementById('body').style.backgroundImage = `url(/assets/backgrounds/${Backgrounds[CurrentBG]})`;
+            document.getElementById('body').style.backgroundImage = `url(/assets/Backgrounds/${Backgrounds[CurrentBG]})`;
         };
     }
 }
