@@ -43,13 +43,28 @@ function askAI(event) {
             document.getElementById("ask-ai").value = " ";
             return " "
         } else {
+            console.log(input)
             document.getElementById('ask-ai').value = "Loading Response...";
-            fetch(`/ai-prompt/${input}`)
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('ask-ai').value = `${data}`;
-                    document.getElementById('ask-ai').style.color = '#65aa70';
+            fetch(`https://api.cohere.com/v1/chat`, {
+                method: "POST",
+                headers: {
+                    'accept': 'application/json',
+                    'content-type': 'application/json',
+                    "Authorization": `bearer oogKH0e9zN23NV3HtjuBkzgd6zDn2ngSGRcOn4ex`
+                },
+                body: JSON.stringify({
+                    "chat_history": chat_history,
+                    "message": `${input}`,
+                    "connectors": [{"id": "web-search"}]
                 })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                document.getElementById('ask-ai').value = `${data['text']}`;
+                chat_history = data['chat_history']
+                document.getElementById('ask-ai').style.color = '#65aa70';
+            })
         }
     } else if (event.key != "Control" && event.key != "Shift" && event.key != "Alt") {
         document.getElementById('ask-ai').style.color = '#ff8400';
@@ -230,6 +245,7 @@ function switchSwapBackground() {
 }
 var Backgrounds = [];
 var swappingBackground = true;
+var chat_history = [];
 getBackgrounds();
 //getBellData();
 //getPortfolioData();
