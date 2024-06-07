@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<head id="head">
+    <title id="belldatatitle"></title>
+    <link rel="icon" href="/assets/logo.png">
+    <link rel="stylesheet" href="/styles/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body id="body"> 
+    <div class="top-card-homepage">
+        <div class="bookmarks">
+            <div class="bookmark">
+                <div id="current-bookmark">School</div>
+                <div class="bookmark-options">
+                    <button id="bookmark-choice-school" style="color:rgba(255, 255, 255, 0.695);" onclick="switchToSchoolBookmarks()">School</button>
+                    <button id="bookmark-choice-personal" style="color:rgba(255, 255, 255, 0.695);" onclick="switchToPersonalBookmarks()">Personal</button>
+                </div>
+            </div>
+            <div id="active-bookmarks"></div>
+        </div>
+        <img class="homepage-img" src = "/assets/house_icon.png" loading="lazy"></img> 
+        <div class="homepage">
+            <h1>Homepage</h1>
+        </div>
+        <div class="ask-ai">
+            <textarea id="ask-ai" type="text"></textarea>
+            <div class="delete-ai">
+                <button onclick="deleteAiText()">
+                    <img src="/assets/close.png" loading="lazy">
+                </button>
+            </div>
+            <div class="copy-ai">
+                <button onclick="copyAiText()">
+                    <img src="/assets/copy.png" loading="lazy">
+                </button>
+            </div>
+        </div>
+        <div class="functions">
+            <h1>Actions</h1>
+            <div class="actions" id="actions">
+                <button onclick="syncTodoist()">Sync Todoist</button>
+                <button onclick="switchSwapBackground()" id="Background-Button">Swap Background (Off)</button>
+            </div>
+        </div>
+        <div class="upcoming-tasks">
+            <h1>Upcoming</h1>
+            <div class="tasks" id="tasks">
+                <div>Task</div>
+                <div>Task</div>
+                <div>Task</div>
+                <div>Task</div>
+                <div>Task</div>
+            </div>
+        </div>
+    </div>
+    <div class="centered-children">
+        <div class="card">
+            <img class="datetime-img" src="/assets/calendar_icon.png" loading="lazy">
+            <div class="datetime" id="datetime">Date+Time</div>
+        </div>
+        <div class="card">
+            <img class="belldata-img" src="/assets/clock_icon.png" loading="lazy">
+            <div class="belldata" id="belldata">Loading...</div>
+        </div>
+        <div class="card">
+            <img class="portfoliodata-img" src="/assets/balance.png" loading="lazy">
+            <div class="portfoliodata" id="portfoliodata">Loading...</div>
+        </div>
+        <div class="searchbar">
+            <textarea id="searchbar" type="text"></textarea>
+        </div>
+    </div>
+    <script defer src="/scripts/main.js"></script>
+</body>
