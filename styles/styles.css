@@ -262,6 +262,10 @@ body {
     height: 400px;
 }
 
+.ask-ai textarea::-webkit-scrollbar {
+    display: none;
+}
+
 .ask-ai textarea:focus{
     background-color: #ffffff2e;
     border: none;
