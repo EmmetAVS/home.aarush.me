@@ -39,9 +39,9 @@ function searchWebsite(event) {
 function askAI(event) {
     if (event.key == "Enter") {
         const input = document.getElementById("ask-ai").value;
-        if (input == "") {
-            document.getElementById("ask-ai").value = "";
-            return ""
+        if (input.trim() == "") {
+            document.getElementById("ask-ai").value = " ";
+            return " "
         } else {
             document.getElementById('ask-ai').value = "Loading Response...";
             fetch(`/ai-prompt/${input}`)

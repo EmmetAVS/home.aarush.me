@@ -235,7 +235,7 @@ body {
 
 .bookmarks a:hover {
     display: block;
-    color: rgb(170, 170, 170);
+    font-weight: bold;
     text-decoration: underline;
 }
 
