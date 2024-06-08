@@ -1,15 +1,28 @@
+function getPeriod() {
+    return ['Summer', "2024-08-12 8:30:00"]
+}
+
 function getBellData() {
-    fetch('/belldata', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('belldata').innerText = `${data.period}: ${data['time-left']}`;
-        document.getElementById('belldatatitle').innerText = `${data['time-left']}`;
-    });
+    const period_time = getPeriod()
+    const Period = period_time[0]
+    const endtime = new Date(period_time[1]);
+    const now = new Date();
+    const fulltimeleft = endtime-now;
+    const Hoursleft = Math.floor(fulltimeleft / (1000 * 60 * 60));
+    let Minutesleft;
+    if (Math.floor((fulltimeleft-(Hoursleft*(1000 * 60 * 60)))/ (1000 * 60))<10) {
+        Minutesleft = "0" + Math.floor((fulltimeleft-(Hoursleft*(1000 * 60 * 60)))/ (1000 * 60));
+    } else {
+        Minutesleft = Math.floor((fulltimeleft-(Hoursleft*(1000 * 60 * 60)))/ (1000 * 60));
+    }
+    let Secondsleft;
+    if (Math.floor((fulltimeleft-(Hoursleft*(1000 * 60 * 60))-(Minutesleft*(1000 * 60)))/ (1000))<10) {
+        Secondsleft = "0" + Math.floor((fulltimeleft-(Hoursleft*(1000 * 60 * 60))-(Minutesleft*(1000 * 60)))/ (1000));
+    } else {
+        Secondsleft = Math.floor((fulltimeleft-(Hoursleft*(1000 * 60 * 60))-(Minutesleft*(1000 * 60)))/ (1000));
+    }
+    const timeleft = `${Hoursleft}:${Minutesleft}:${Secondsleft}`
+    document.getElementById("belldata").innerText = `${Period}: ${timeleft}`
 }
 function getPortfolioData() {
     fetch('/portfoliodata', {
@@ -43,7 +56,6 @@ function askAI(event) {
             document.getElementById("ask-ai").value = " ";
             return " "
         } else {
-            console.log(input)
             document.getElementById('ask-ai').value = "Loading Response...";
             fetch(`https://api.cohere.com/v1/chat`, {
                 method: "POST",
@@ -60,7 +72,6 @@ function askAI(event) {
             })
             .then(response => response.json())
             .then(data => {
-                console.log(data)
                 document.getElementById('ask-ai').value = `${data['text']}`;
                 chat_history = data['chat_history']
                 document.getElementById('ask-ai').style.color = '#65aa70';
@@ -184,7 +195,6 @@ function TodoistTasks() {
                 content_parsed = content;
             }
             try {
-                //console.log(task['due']['date']);
                 const d = task['due']['date'].split('-');
                 const date = new Date(d[0], d[1]-1, d[2])
                 if (d[0] == "2024") {
@@ -197,7 +207,6 @@ function TodoistTasks() {
             }
             
         }
-        console.log(tasks)
         var task_html = [];
         for (task of tasks) {
             task_html.push(`<div>${task}</div>`)
@@ -247,14 +256,14 @@ var Backgrounds = [];
 var swappingBackground = true;
 var chat_history = [];
 getBackgrounds();
-//getBellData();
+getBellData();
 //getPortfolioData();
 getDateTime();
 TodoistTasks();
 switchToSchoolBookmarks()
 document.getElementById('searchbar').addEventListener('keydown', searchWebsite);
 document.getElementById('ask-ai').addEventListener('keydown', askAI);
-//setInterval(getBellData, 1000);
+setInterval(getBellData, 1000);
 //setInterval(getPortfolioData, 5000);
 setInterval(getDateTime, 1000);
 setInterval(TodoistTasks, 5000);
