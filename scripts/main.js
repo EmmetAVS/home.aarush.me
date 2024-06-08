@@ -302,6 +302,12 @@ function verifyIdentity() {
         document.cookie = "Verified; expires=" + expires + ";"
     }
 }
+function keepBackground(event) {
+    console.log(event.key)
+    if (event.key == "b") {
+        switchSwapBackground()
+    }
+}
 var Backgrounds = [];
 var swappingBackground = true;
 var chat_history = [];
@@ -313,6 +319,7 @@ TodoistTasks();
 switchToSchoolBookmarks()
 document.getElementById('searchbar').addEventListener('keydown', searchWebsite);
 document.getElementById('ask-ai').addEventListener('keydown', askAI);
+document.addEventListener('keydown', keepBackground)
 //setInterval(getPortfolioData, 5000);
 setInterval(getDateTime, 1000);
 setInterval(TodoistTasks, 5000);
