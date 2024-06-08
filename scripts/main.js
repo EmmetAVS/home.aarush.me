@@ -59,7 +59,9 @@ function getBellData() {
     }
     const timeleft = `${Hoursleft}:${Minutesleft}:${Secondsleft}`
     document.getElementById("belldata").innerText = `${Period}: ${timeleft}`
-    document.getElementById("belldatatitle").innerText = `${Period}: ${timeleft}`
+    if (document.cookie.split(';')[0] == "Verified") {
+        document.getElementById("belldatatitle").innerText = `${Period}: ${timeleft}`
+    }
 }
 function getPortfolioData() {
     fetch('/portfoliodata', {
@@ -289,9 +291,21 @@ function switchSwapBackground() {
     };
     swapBackground()
 }
+function verifyIdentity() {
+    if (document.cookie.split(';')[0] != "Verified") {
+        document.getElementById('body').style.display = 'none';
+        document.getElementById('belldatatitle').innerText = 'Not Verified';
+    } else {
+        document.getElementById('body').style.display = 'block';
+        const expires = new Date()
+        expires.setFullYear('2100')
+        document.cookie = "Verified; expires=" + expires + ";"
+    }
+}
 var Backgrounds = [];
 var swappingBackground = true;
 var chat_history = [];
+verifyIdentity()
 getBackgrounds();
 //getPortfolioData();
 getDateTime();
@@ -303,6 +317,7 @@ document.getElementById('ask-ai').addEventListener('keydown', askAI);
 setInterval(getDateTime, 1000);
 setInterval(TodoistTasks, 5000);
 setInterval(swapBackground, 5000);
+setInterval(verifyIdentity, 500);
 let Breaks
 getBreaks().then((result) => {
     Breaks = result
