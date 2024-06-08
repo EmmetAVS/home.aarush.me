@@ -59,6 +59,7 @@ function getBellData() {
     }
     const timeleft = `${Hoursleft}:${Minutesleft}:${Secondsleft}`
     document.getElementById("belldata").innerText = `${Period}: ${timeleft}`
+    document.getElementById("belldatatitle").innerText = `${Period}: ${timeleft}`
 }
 function getPortfolioData() {
     fetch('/portfoliodata', {
