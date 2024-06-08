@@ -1,5 +1,41 @@
+function getBreaks() {
+    return (fetch('breaks.json')
+    .then (response => response.json())
+    .then (data => {
+        return data;
+}))}
+
 function getPeriod() {
-    return ['Summer', "2024-08-12 8:30:00"]
+    for (brk of Breaks) {
+        const times = brk[1].split('|')
+        const firsttime = new Date(times[0])
+        const secondtime = new Date(times[1])
+        const currenttime = new Date()
+        if (firsttime <= new Date() <= secondtime) {
+            return [brk[0], brk[1].split('|')[1]]
+        }
+    };
+    const currenttime = new Date();
+    const day = currenttime.getDay();
+    if (day == 0 || day == 6) {
+        const schoolstarttime = new Date()
+        schoolstarttime.setHours(8);
+        schoolstarttime.setMinutes(30);
+        schoolstarttime.setSeconds(0);
+        schoolstarttime.setMilliseconds(0);
+        return ['Weekend', schoolstarttime]
+    } else if (day == 1) {
+        const A_Times = [["Period 1", "08:30 09:20"],["Passing Period", "09:20 09:27"],["Period 2", "09:27 10:17"],["Brunch", "10:17 10:25"],["Passing Period", "10:25 10:32"],["Period 3", "10:32 11:22"],["Passing Period", "11:22 11:29"],["Period 4", "11:29 12:19"],["Lunch", "12:19 12:54"],["Passing Period", "12:54 13:01"],["Period 5", "13:01 13:51"],["Passing Period", "13:51 13:58"],["Period 6", "13:58 14:48"],["Passing Period", "14:48 14:55"],["Period 7", "14:55 15:45"]]
+        for (item of A_Times) {
+            const times = item[1].split(' ')
+            const firsttime = new Date(times[0])
+            const secondtime = new Date(times[1])
+            const currenttime = new Date()
+            if (firsttime <= new Date() <= secondtime) {
+                return [item[0], item[1].split('|')[1]]
+            }
+        };
+    }
 }
 
 function getBellData() {
@@ -256,15 +292,19 @@ var Backgrounds = [];
 var swappingBackground = true;
 var chat_history = [];
 getBackgrounds();
-getBellData();
 //getPortfolioData();
 getDateTime();
 TodoistTasks();
 switchToSchoolBookmarks()
 document.getElementById('searchbar').addEventListener('keydown', searchWebsite);
 document.getElementById('ask-ai').addEventListener('keydown', askAI);
-setInterval(getBellData, 1000);
 //setInterval(getPortfolioData, 5000);
 setInterval(getDateTime, 1000);
 setInterval(TodoistTasks, 5000);
 setInterval(swapBackground, 5000);
+let Breaks
+getBreaks().then((result) => {
+    Breaks = result
+    getBellData()
+})
+setInterval(getBellData, 1000)
