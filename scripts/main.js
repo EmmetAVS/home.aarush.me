@@ -205,7 +205,7 @@ function TodoistTasks() {
         .then(response => response.json())
         .then(data => {
             const tasks = [];
-            data.sort(function(a, b){
+            data.sort(function(a, b) {
                 try {
                     const b_date_list = b['due']['date'].split('-');
                     const b_date = new Date(b_date_list[0], b_date_list[1]-1, b_date_list[2]);
@@ -305,15 +305,21 @@ function handleCookie() {
         const expires = new Date()
         expires.setFullYear('2100')
         document.cookie = `${TodoistAPI}|${CohereAPI}; expires=${expires};`
-        TodoistTasks();
-        setInterval(TodoistTasks, 20000);
+        if (!taskAlreadyActivated) {
+            TodoistTasks();
+            setInterval(TodoistTasks, 20000);
+            taskAlreadyActivated = true;
+        }
     } 
     const keys = document.cookie.split(";")[0].split("|");
     if (keys.length == 2) {
         TodoistAPI = keys[0];
         CohereAPI = keys[1];
-        TodoistTasks();
-        setInterval(TodoistTasks, 20000);
+        if (!taskAlreadyActivated) {
+            TodoistTasks()
+            setInterval(TodoistTasks, 20000);
+            taskAlreadyActivated = true;
+        }
     } else {
         console.log("API Keys not Set")
     }
@@ -324,6 +330,7 @@ function inputCohere() {
 function inputTodoist() {
     TodoistAPI = prompt("Please Input a Todoist API Key").trim();
 }
+var taskAlreadyActivated = false;
 var TodoistAPI = "";
 var CohereAPI = "";
 var Backgrounds = [];
