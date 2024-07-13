@@ -101,7 +101,7 @@ function askAI(event) {
                 headers: {
                     'accept': 'application/json',
                     'content-type': 'application/json',
-                    "Authorization": `bearer oogKH0e9zN23NV3HtjuBkzgd6zDn2ngSGRcOn4ex`
+                    "Authorization": `bearer ${CohereAPI}`
                 },
                 body: JSON.stringify({
                     "chat_history": chat_history,
@@ -196,63 +196,66 @@ function Test() {
 
 function TodoistTasks() {
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    fetch("https://api.todoist.com/rest/v2/tasks", {
-        headers: {
-            "Authorization": "Bearer e316a4359886c9b685f3eec6e855c2a54cf85017"
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        const tasks = [];
-        data.sort(function(a, b){
-            try {
-                const b_date_list = b['due']['date'].split('-');
-                const b_date = new Date(b_date_list[0], b_date_list[1]-1, b_date_list[2]);
+    try {
+        fetch("https://api.todoist.com/rest/v2/tasks", {
+            headers: {
+                "Authorization": `Bearer ${TodoistAPI}`,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const tasks = [];
+            data.sort(function(a, b){
                 try {
-                    const a_date_list = a['due']['date'].split('-');
-                    const a_date = new Date(a_date_list[0], a_date_list[1]-1, a_date_list[2]);
-                    if (a_date > b_date) {
-                        return 1
-                    } else if (b_date > a_date) {
-                        return -1
-                    } else {
-                        return 0
+                    const b_date_list = b['due']['date'].split('-');
+                    const b_date = new Date(b_date_list[0], b_date_list[1]-1, b_date_list[2]);
+                    try {
+                        const a_date_list = a['due']['date'].split('-');
+                        const a_date = new Date(a_date_list[0], a_date_list[1]-1, a_date_list[2]);
+                        if (a_date > b_date) {
+                            return 1
+                        } else if (b_date > a_date) {
+                            return -1
+                        } else {
+                            return 0
+                        }
+                    } catch (error) {
+                            return 1
                     }
                 } catch (error) {
-                        return 1
+                    return -1
                 }
-            } catch (error) {
-                return -1
-            }
-        });
-        for (task of data) {
-            const content = task['content'].trim()
-            let content_parsed;
-            if (content[content.length-1] == ".") {
-                content_parsed = content.slice(0, -1);
-            } else {
-                content_parsed = content;
-            }
-            try {
-                const d = task['due']['date'].split('-');
-                const date = new Date(d[0], d[1]-1, d[2])
-                if (d[0] == "2024") {
-                    tasks.push(`${content_parsed}: ${months[date.getMonth()]} ${date.getDate()}`);
+            });
+            for (task of data) {
+                const content = task['content'].trim()
+                let content_parsed;
+                if (content[content.length-1] == ".") {
+                    content_parsed = content.slice(0, -1);
                 } else {
-                    tasks.push(`${content_parsed}: ${months[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`);
+                    content_parsed = content;
                 }
-            } catch (error) {
-                tasks.push(content_parsed);
+                try {
+                    const d = task['due']['date'].split('-');
+                    const date = new Date(d[0], d[1]-1, d[2])
+                    if (d[0] == "2024") {
+                        tasks.push(`${content_parsed}: ${months[date.getMonth()]} ${date.getDate()}`);
+                    } else {
+                        tasks.push(`${content_parsed}: ${months[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`);
+                    }
+                } catch (error) {
+                    tasks.push(content_parsed);
+                }
+                
             }
-            
-        }
-        var task_html = [];
-        for (task of tasks) {
-            task_html.push(`<div>${task}</div>`)
-        };
-        const finished_html = task_html.join('\n');
-        document.getElementById('tasks').innerHTML = `${finished_html}`;
-    });
+            var task_html = [];
+            for (task of tasks) {
+                task_html.push(`<div>${task}</div>`)
+            };
+            const finished_html = task_html.join('\n');
+            document.getElementById('tasks').innerHTML = `${finished_html}`;
+        });
+    } catch(err) {
+    }
 }
 function getBackgrounds() {
     fetch("backgrounds.json")
@@ -291,40 +294,48 @@ function switchSwapBackground() {
     };
     swapBackground()
 }
-function verifyIdentity() {
-    if (document.cookie.split(';')[0] != "Verified") {
-        document.getElementById('body').style.display = 'none';
-        document.getElementById('belldatatitle').innerText = 'Not Verified';
-    } else {
-        document.getElementById('body').style.display = 'block';
-        const expires = new Date()
-        expires.setFullYear('2100')
-        document.cookie = "Verified; expires=" + expires + ";"
-    }
-}
 function keepBackground(event) {
     console.log(event.key)
     if (event.key == "b") {
         switchSwapBackground()
     }
 }
+function handleCookie() {
+    if (TodoistAPI != "" && CohereAPI != "") {
+        console.log("Activated");
+        const expires = new Date()
+        expires.setFullYear('2100')
+        document.cookie = `${TodoistAPI}|${CohereAPI}; expires=${expires};`
+        TodoistTasks();
+        setInterval(TodoistTasks, 5000);
+    } 
+    const keys = document.cookie.split(";")[0].split("|");
+    if (keys.length == 2) {
+        TodoistAPI = keys[0];
+        CohereAPI = keys[1];
+        TodoistTasks();
+        setInterval(TodoistTasks, 5000);
+    } else {
+        console.log("API Keys not Set")
+    }
+}
+var TodoistAPI = "";
+var CohereAPI = "";
 var Backgrounds = [];
 var swappingBackground = true;
 var chat_history = [];
-verifyIdentity()
 getBackgrounds();
+handleCookie();
 //getPortfolioData();
 getDateTime();
-TodoistTasks();
 switchToSchoolBookmarks()
 document.getElementById('searchbar').addEventListener('keydown', searchWebsite);
 document.getElementById('ask-ai').addEventListener('keydown', askAI);
 document.addEventListener('keydown', keepBackground)
 //setInterval(getPortfolioData, 5000);
 setInterval(getDateTime, 1000);
-setInterval(TodoistTasks, 5000);
 setInterval(swapBackground, 5000);
-setInterval(verifyIdentity, 500);
+setInterval(handleCookie, 1000);
 let Breaks
 getBreaks().then((result) => {
     Breaks = result
