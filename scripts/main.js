@@ -302,22 +302,27 @@ function keepBackground(event) {
 }
 function handleCookie() {
     if (TodoistAPI != "" && CohereAPI != "") {
-        console.log("Activated");
         const expires = new Date()
         expires.setFullYear('2100')
         document.cookie = `${TodoistAPI}|${CohereAPI}; expires=${expires};`
         TodoistTasks();
-        setInterval(TodoistTasks, 5000);
+        setInterval(TodoistTasks, 20000);
     } 
     const keys = document.cookie.split(";")[0].split("|");
     if (keys.length == 2) {
         TodoistAPI = keys[0];
         CohereAPI = keys[1];
         TodoistTasks();
-        setInterval(TodoistTasks, 5000);
+        setInterval(TodoistTasks, 20000);
     } else {
         console.log("API Keys not Set")
     }
+}
+function inputCohere() {
+    CohereAPI = prompt("Please Input a Cohere API Key").trim();
+}
+function inputTodoist() {
+    TodoistAPI = prompt("Please Input a Todoist API Key").trim();
 }
 var TodoistAPI = "";
 var CohereAPI = "";

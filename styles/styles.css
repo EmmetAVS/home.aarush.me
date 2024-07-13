@@ -346,11 +346,13 @@ body {
 }
 
 .functions button {
-    width: 7rem;
+    width: 9rem;
     color: #ffffff6e;   
     background-color: #00000021;
     font-weight: bold;
     border: none;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
     border-radius: 1rem;
     margin-bottom: 0.9rem;
 }
