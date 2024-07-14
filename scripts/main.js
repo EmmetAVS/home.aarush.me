@@ -57,11 +57,9 @@ function getBellData() {
     } else {
         Secondsleft = Math.floor((fulltimeleft-(Hoursleft*(1000 * 60 * 60))-(Minutesleft*(1000 * 60)))/ (1000));
     }
-    const timeleft = `${Hoursleft}:${Minutesleft}:${Secondsleft}`
-    document.getElementById("belldata").innerText = `${Period}: ${timeleft}`
-    if (document.cookie.split(';')[0] == "Verified") {
-        document.getElementById("belldatatitle").innerText = `${Period}: ${timeleft}`
-    }
+    const timeleft = `${Hoursleft}:${Minutesleft}:${Secondsleft}`;
+    document.getElementById("belldata").innerText = `${Period}: ${timeleft}`;
+    document.getElementById("belldatatitle").innerText = `${Period}: ${timeleft}`;
 }
 function getPortfolioData() {
     fetch('/portfoliodata', {
