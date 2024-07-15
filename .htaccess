@@ -1,5 +1,5 @@
 RewriteEngine on
-# Redirect all undefined paths to /specific-url
+# Redirect any undefined path to the base URL
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ / [L,R=301]
