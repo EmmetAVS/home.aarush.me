@@ -1,11 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="website">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Page Not Found</title>
     <script>
-        window.location.replace('/');
+        //window.location.replace('/');
+        fetch('/')
+        .then (response => response.text())
+        .then (data => {
+            const website = document.getElementById("website");
+            website.innerHTML = data;
+            const main = document.createElement("script");
+            main.src = '/scripts/main.js'
+            document.head.append(main);
+        })
     </script>
 </head>
 <body>

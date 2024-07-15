@@ -328,6 +328,7 @@ function inputCohere() {
 function inputTodoist() {
     TodoistAPI = prompt("Please Input a Todoist API Key").trim();
 }
+console.log("Activated");
 var taskAlreadyActivated = false;
 var TodoistAPI = "";
 var CohereAPI = "";
