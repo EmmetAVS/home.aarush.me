@@ -235,10 +235,18 @@ function TodoistTasks() {
                 try {
                     const d = task['due']['date'].split('-');
                     const date = new Date(d[0], d[1]-1, d[2])
-                    if (d[0] == "2024") {
-                        tasks.push(`${content_parsed}: ${months[date.getMonth()]} ${date.getDate()}`);
+                    if (date > new Date()) {
+                        if (d[0] == "2024") {
+                            tasks.push(`${content_parsed}: ${months[date.getMonth()]} ${date.getDate()}`);
+                        } else {
+                            tasks.push(`${content_parsed}: ${months[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`);
+                        }
                     } else {
-                        tasks.push(`${content_parsed}: ${months[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}`);
+                        if (d[0] == "2024") {
+                            tasks.push(`<b>${content_parsed}: ${months[date.getMonth()]} ${date.getDate()}</b>`);
+                        } else {
+                            tasks.push(`<b>${content_parsed}: ${months[date.getMonth()]} ${date.getDate()} ${date.getFullYear()}</b>`);
+                        }
                     }
                 } catch (error) {
                     tasks.push(content_parsed);
