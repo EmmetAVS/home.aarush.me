@@ -302,7 +302,7 @@ function switchSwapBackground() {
 }
 function keepBackground(event) {
     console.log(event.key)
-    if (event.key == "b") {
+    if (event.key == "b" && !document.getElementById('searchbar').matches(":focus") && !document.getElementById('ask-ai').matches(":focus")) {
         switchSwapBackground()
     }
 }
