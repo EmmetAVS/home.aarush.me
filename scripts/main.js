@@ -61,22 +61,6 @@ function getBellData() {
     document.getElementById("belldata").innerText = `${Period}: ${timeleft}`;
     document.getElementById("belldatatitle").innerText = `${Period}: ${timeleft}`;
 }
-function getPortfolioData() {
-    fetch('/portfoliodata', {
-        method: "GET", 
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data['Market-Open'] == true) {
-            document.getElementById('portfoliodata').innerText = `$${data['Portfolio-Value']}`;
-        } else {
-            document.getElementById('portfoliodata').innerText = `$${data['Portfolio-Value']} (Closed)`;
-        }
-    })
-}
 function searchWebsite(event) {
     if (event.key == "Enter") {
         const inputValue = document.getElementById('searchbar').value;
@@ -180,14 +164,6 @@ function switchToPersonalBookmarks() {
     document.getElementById("current-bookmark").style.color = 'rgba(255, 255, 255, 0.695)';
     document.getElementById("current-bookmark").innerText = "Personal";
 }
-function syncTodoist() {
-    console.log("Syncing todoist");
-    fetch("/synctodoist")
-    .then(response => response.text())
-    .then(data => {
-        alert(`Todoist Sync: ${data}`)
-    });
-}
 function Test() {
     console.log("activated");
 }
@@ -261,6 +237,7 @@ function TodoistTasks() {
             document.getElementById('tasks').innerHTML = `${finished_html}`;
         });
     } catch(err) {
+        console.log(err);
     }
 }
 function getBackgrounds() {
