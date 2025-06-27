@@ -10,11 +10,20 @@ class Widget {
     static distanceFromBorderToResize = 15;
     static allWidgets = [];
     static minSize = 100;
+    static highestZIndex = 1000;
 
     static saveWidgets() {
         const widgetData = [];
+
+        let smallestZIndex = Widget.highestZIndex;
+        for (const widget of Widget.allWidgets) {
+            if (parseInt(widget.element.style.zIndex, 10) < smallestZIndex) {
+                smallestZIndex = parseInt(widget.element.style.zIndex, 10);
+            }
+        }
         
         for (const widget of Widget.allWidgets) {
+            widget.element.style.zIndex = Math.max(parseInt(widget.element.style.zIndex, 10) - smallestZIndex + 1, 0);
             widgetData.push(widget.toJSON());
         }
         
@@ -31,6 +40,10 @@ class Widget {
                     const widget = new Widget();
                     widget.fromJSON(widgetJSON);
                     document.body.appendChild(widget.element);
+
+                    if (parseInt(widget.element.style.zIndex, 10) > Widget.highestZIndex) {
+                        Widget.highestZIndex = parseInt(widget.element.style.zIndex, 10) + 1;
+                    }
                 }
 
                 Widget.saveWidgets();
@@ -69,6 +82,7 @@ class Widget {
         this._element = document.createElement('div');
         this._element.id = "widget-" + (new Date()).getTime();
         this._element.style.position = "absolute";
+        this._element.style.zIndex = Widget.highestZIndex++;
 
         this._element.innerHTML = `
             ${Widget._createHeader(this._element.id)}
@@ -90,6 +104,10 @@ class Widget {
     }
 
     mouseDownEvent(event) {
+
+        if (parseInt(this._element.style.zIndex, 10) < Widget.highestZIndex) {
+            this._element.style.zIndex = Widget.highestZIndex++;
+        }
 
         const rect = this._element.getBoundingClientRect();
 
@@ -188,7 +206,8 @@ class Widget {
             top: this._element.style.top || computedStyle.top,
             width: this._element.style.width || computedStyle.width,
             height: this._element.style.height || computedStyle.height,
-            id: this._element.id
+            id: this._element.id,
+            zIndex: this._element.style.zIndex
         };
     }
 
@@ -200,6 +219,7 @@ class Widget {
         this._element.style.height = data.height || "5rem";
         this._element.style.position = "absolute";
         this._element.id = data.id || "widget-" + (new Date()).getTime();
+        this._element.style.zIndex = data.zIndex || Widget.highestZIndex++;
     }
 
     get element() {
