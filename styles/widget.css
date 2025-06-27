@@ -1,0 +1,47 @@
+.widget {
+    position: absolute;
+    border: 0.1rem solid rgba(0, 0, 0, 0.5);
+    cursor: grab;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    backdrop-filter: blur(0.5rem);
+    text-align: center;
+    overflow-y: auto;
+    width: 10rem;
+    height: 5rem;
+    background-color: rgba(255, 255, 255, 0.05);
+
+    -webkit-user-select: none;
+    -ms-user-select: none; 
+    user-select: none; 
+}
+
+.widget:hover {
+    border-color: rgba(0, 0, 0, 1);
+}
+
+.widget::-webkit-scrollbar {
+    display: none;
+}
+
+.widget-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: calc(100% - 2*min(5%, 1rem));
+}
+
+.widget-header > button {
+    background-color: transparent;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.75rem;
+}
+
+.widget-content {
+
+}
