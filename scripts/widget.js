@@ -69,6 +69,9 @@ class Widget {
 
         Widget.headerVisible = !Widget.headerVisible;
 
+        if (Widget.headerVisible) document.getElementById("widgetHeaderVisibility").innerHTML = `<img src="./assets/visibility-off.png" alt="Show">`;
+        else document.getElementById("widgetHeaderVisibility").innerHTML = `<img src="./assets/visibility-on.png" alt="Hide">`;
+
         for (const widget of Widget.allWidgets) {
             const header = document.getElementById(widget.element.id + "-header");
             if (!header) continue;
@@ -98,6 +101,10 @@ class Widget {
     }
 
     static applyHeaderVisibility() {
+
+        if (Widget.headerVisible) document.getElementById("widgetHeaderVisibility").innerHTML = `<img src="./assets/visibility-off.png" alt="Show">`;
+        else document.getElementById("widgetHeaderVisibility").innerHTML = `<img src="./assets/visibility-on.png" alt="Hide">`;
+
         for (const widget of Widget.allWidgets) {
             const header = document.getElementById(widget.element.id + "-header");
             if (!header) continue;
@@ -444,13 +451,17 @@ class WidgetContent {
         this._widgetId = widgetId;
 
         if (!this._update || !widgetId) return;
+        this._update();
         this._interval = setInterval(() => {
             const widget = Widget.allWidgets.find(widget => widget.element.id === this._widgetId);
             if (!widget) {
                 clearInterval(this._interval);
                 return;
             }
-            this._update();
+            if (this._update() === false) {
+                clearInterval(this._interval);
+                return;
+            }
         }, interval);
     }
 }
