@@ -63,6 +63,60 @@ class Widget {
     static allWidgets = [];
     static minSize = 100;
     static highestZIndex = 1000;
+    static headerVisible = true;
+
+    static updateWidgetHeaderVisibility() {
+
+        Widget.headerVisible = !Widget.headerVisible;
+
+        for (const widget of Widget.allWidgets) {
+            const header = document.getElementById(widget.element.id + "-header");
+            if (!header) continue;
+
+            if (Widget.headerVisible) {
+                header.style.display = "flex";
+
+                const rect = widget.element.getBoundingClientRect();
+                const oldTop = rect.top;
+
+                widget.element.style.height = rect.height + widget.headerHeight + "px";
+                widget.element.style.top = oldTop + "px";
+            } else {
+                const headerRect = header.getBoundingClientRect();
+                const rect = widget.element.getBoundingClientRect();
+                widget.headerHeight = headerRect.height;
+
+                const oldTop = rect.top;
+                widget.element.style.height = (rect.height - headerRect.height) + "px";
+                widget.element.style.top = oldTop + "px";
+                header.style.display = "none";
+            }
+        }
+
+        Widget.saveWidgets();
+
+    }
+
+    static applyHeaderVisibility() {
+        for (const widget of Widget.allWidgets) {
+            const header = document.getElementById(widget.element.id + "-header");
+            if (!header) continue;
+
+            const rect = widget.element.getBoundingClientRect();
+            const oldTop = rect.top;
+
+            if (Widget.headerVisible) {
+                header.style.display = "flex";
+                widget.element.style.height = (rect.height + widget.headerHeight) + "px";
+                widget.element.style.top = oldTop + "px";
+            } else {
+                widget.headerHeight = header.getBoundingClientRect().height;
+                widget.element.style.height = (rect.height - widget.headerHeight) + "px";
+                widget.element.style.top = oldTop + "px";
+                header.style.display = "none";
+            }
+        }
+    }
 
     static saveWidgets() {
         const widgetData = [];
@@ -80,6 +134,7 @@ class Widget {
         }
         
         localStorage.setItem("widgets", JSON.stringify(widgetData));
+        localStorage.setItem("widgetHeaderVisible", JSON.stringify(Widget.headerVisible));
     }
 
     static _startup() {
@@ -91,6 +146,7 @@ class Widget {
     static loadWidgets() {
         Widget._startup();
         const widgetData = localStorage.getItem("widgets");
+        Widget.headerVisible = (localStorage.getItem("widgetHeaderVisible") === "true");
         if (widgetData) {
             try {
                 const widgets = JSON.parse(widgetData);
@@ -103,8 +159,18 @@ class Widget {
                     if (parseInt(widget.element.style.zIndex, 10) > Widget.highestZIndex) {
                         Widget.highestZIndex = parseInt(widget.element.style.zIndex, 10) + 1;
                     }
+
+                    document.getElementById(widget.element.id + "-header").style.display = "flex";
+                    const rect = widget.element.getBoundingClientRect();
+                    const oldTop = rect.top;
+
+                    if (Widget.headerVisible) widget.headerHeight = 0;
+                    else widget.headerHeight = document.getElementById(widget.element.id + "-header").getBoundingClientRect().height;
+                    widget.element.style.height = (rect.height + widget.headerHeight) + "px";
+                    widget.element.style.top = oldTop + "px";
                 }
 
+                Widget.applyHeaderVisibility();
                 Widget.saveWidgets();
                 return true;
             } catch (error) {
@@ -121,6 +187,7 @@ class Widget {
         const widget = Widget.allWidgets[index];
         if (widget) {
             console.log(`Closing widget: ${widget.element.id}`);
+            widget.handleClose();
             document.body.removeChild(widget.element);
             Widget.allWidgets.splice(index, 1);
             Widget.saveWidgets();
@@ -176,6 +243,8 @@ class Widget {
         
         `
 
+        this.headerHeight = 0;
+
         this._element.classList.add("widget");
         this._element.addEventListener('mousedown', (event) => { this.mouseDownEvent(event) });
         this._element.addEventListener('mouseup', (event) => { this.mouseUpEvent(event) });
@@ -187,6 +256,17 @@ class Widget {
         Widget.allWidgets.push(this);
 
         Widget.saveWidgets();
+    }
+
+    handleClose() {
+        if (this._resizeInterval) {
+            clearInterval(this._resizeInterval);
+        }
+        if (this._moveInterval) {
+            clearInterval(this._moveInterval);
+        }
+        this._element.removeEventListener('mousedown', this.mouseDownEvent);
+        this._element.removeEventListener('mouseup', this.mouseUpEvent);
     }
 
     mouseDownEvent(event) {
@@ -252,7 +332,7 @@ class Widget {
         let newHeight = this._originalHeight + (clientY - this._originalClientY);
 
         newWidth = Math.max(Widget.minSize, newWidth);
-        newHeight = Math.max(Widget.minSize * 0.5, newHeight);
+        newHeight = Math.max((Widget.minSize * 0.3), newHeight);
 
         if (this._element.style.cursor === "e-resize") {
             this._element.style.width = newWidth + "px";
@@ -294,7 +374,7 @@ class Widget {
             height: this._element.style.height || computedStyle.height,
             id: this._element.id,
             zIndex: this._element.style.zIndex,
-            contentClassName: this.contentClassName
+            contentClassName: this.contentClassName,
         };
     }
 
@@ -366,7 +446,12 @@ class WidgetContent {
 
         if (!this._updateFunction || !widgetId) return;
         this._interval = setInterval(() => {
-            this._updateFunction(Widget.allWidgets.find(widget => widget.element.id === this._widgetId));
+            const widget = Widget.allWidgets.find(widget => widget.element.id === this._widgetId);
+            if (!widget) {
+                clearInterval(this._interval);
+                return;
+            }
+            this._updateFunction(widget);
         }, interval);
     }
 }

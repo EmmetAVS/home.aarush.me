@@ -16,6 +16,8 @@ window.modalClose = (action) => {
     Widget.modalClose(action);
 }
 
+window.updateWidgetHeaderVisibility = Widget.updateWidgetHeaderVisibility
+
 const main = () => {
 
     fetch("backgrounds.json")
