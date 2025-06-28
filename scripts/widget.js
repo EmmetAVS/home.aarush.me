@@ -440,18 +440,17 @@ class Widget {
 }
 
 class WidgetContent {
-    constructor(widgetId, updateFunction = null, interval = 1000) {
+    constructor(widgetId, interval = 1000) {
         this._widgetId = widgetId;
-        this._updateFunction = updateFunction;
 
-        if (!this._updateFunction || !widgetId) return;
+        if (!this._update || !widgetId) return;
         this._interval = setInterval(() => {
             const widget = Widget.allWidgets.find(widget => widget.element.id === this._widgetId);
             if (!widget) {
                 clearInterval(this._interval);
                 return;
             }
-            this._updateFunction(widget);
+            this._update();
         }, interval);
     }
 }
