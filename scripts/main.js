@@ -3,9 +3,17 @@ window.closeWidget = (id) => {
     Widget.closeWidget(id);
 };
 
+window.openWidgetSettings = (id) => {
+    Widget.openWidgetSettings(id);
+};
+
 window.createWidget = () => {
     let w = new Widget();
     document.body.appendChild(w.element);
+}
+
+window.modalClose = (action) => {
+    Widget.modalClose(action);
 }
 
 const main = () => {

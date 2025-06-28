@@ -2,12 +2,34 @@
 <html>
     <head>
         <title>Homepage</title>
-        <link rel="stylesheet" href="/styles/globals.css">
-        <link rel="stylesheet" href="/styles/styles.css">
-        <link rel="stylesheet" href="/styles/widget.css">
-        <script type="module" src="scripts/main.js" defer></script>
+        <link rel="stylesheet" href="./styles/globals.css">
+        <link rel="stylesheet" href="./styles/styles.css">
+        <link rel="stylesheet" href="./styles/widget.css">
+        <link rel="stylesheet" href="http://lib.cadenchau.com/lib.css">
+        <script type="module" src="./scripts/widgetContents.js" defer></script>
+        <script type="module" src="./scripts/main.js" defer></script>
     </head>
     <body>
-        <button class="widget-creator" id="widgetCreator" onclick="createWidget()">+</button>
+        <div id="modal" class="modal-background centered-children" style="display: none; width: 100%; height:100%">
+            <div class="modal vertical-container">
+                <div class="modal-header">
+                    <h2>Widget Editor</h2>
+                    <button class="close-button" onclick="modalClose('ignore')">X</button>
+                </div>
+                <div class="modal-content">
+                    <div class="modal-widget-title">
+                        <label for="widgetTitle">Widget Title:</label>
+                        <input type="text" id="widgetTitle" placeholder="Widget Title">
+                    </div>
+                    <div id="widgetContentOptions" class="modal-widget-content-options">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-panel">
+            <button class="widget-creator" id="widgetCreator" onclick="createWidget()">+</button>
+            <button id="widgetHeaderVisibility" onclick="updateWidgetHeaderVisibility()"><img src="./assets/visibility-on.png" alt="Hide"></button>
+        </div>
     </body>
 </html>

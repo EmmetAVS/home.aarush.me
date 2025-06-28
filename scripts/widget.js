@@ -1,12 +1,64 @@
 let clientX;
 let clientY;
 
+let allWidgetContents = [];
+
 document.onmousemove = (e) => {
     clientX = e.clientX;
     clientY = e.clientY;
 }
 
+function animateOpenModal(m) {
+  m.style.display = ""
+  m.style.opacity = "1"
+  m.style.background = "rgba(0, 0, 0, 0.8)"
+  m.style.animation = "fade-in 0.3s"
+  m.children[0].style.animation = "move-up 0.3s"
+}
+
+function animateCloseModal(m) {
+  setTimeout(function() {
+    m.style.display = "none"
+  }, 301)
+  m.children[0].style.animation = "move-down 0.3s"
+  m.style.animation = "fade-out 0.3s"
+  m.style.opacity = 0
+}
+
+function handleWidgetModalStartup() {
+    const input = document.getElementById("widgetTitle");
+    input.addEventListener("keypress", function(event) {
+
+        if (event.key === "Enter") {
+            event.preventDefault();
+            const widget = Widget.currentUpdatingWidget;
+            if (widget) {
+                widget.setTitle(input.value);
+                document.activeElement.blur();
+            }
+        }
+    });
+
+    const widgetContentOptions = document.getElementById("widgetContentOptions");
+    widgetContentOptions.innerHTML = "";
+
+    for (let i = 0; i < allWidgetContents.length; i++) {
+        const contentClass = allWidgetContents[i];
+        const content = new contentClass(null);
+        const element = document.createElement("div");
+        element.className = "modal-widget-content-option";
+        element.innerHTML = content.toString();
+        element.onclick = () => {
+            Widget.currentUpdatingWidget.setContent(contentClass);
+            animateCloseModal(document.getElementById("modal"));
+        }
+        widgetContentOptions.appendChild(element);
+
+    }
+}
+
 class Widget {
+    static currentUpdatingWidget = null;
     static distanceFromBorderToResize = 15;
     static allWidgets = [];
     static minSize = 100;
@@ -30,7 +82,14 @@ class Widget {
         localStorage.setItem("widgets", JSON.stringify(widgetData));
     }
 
+    static _startup() {
+
+        handleWidgetModalStartup();
+
+    }
+
     static loadWidgets() {
+        Widget._startup();
         const widgetData = localStorage.getItem("widgets");
         if (widgetData) {
             try {
@@ -38,8 +97,8 @@ class Widget {
                 console.log('Loading widgets:', widgets);
                 for (const widgetJSON of widgets) {
                     const widget = new Widget();
-                    widget.fromJSON(widgetJSON);
                     document.body.appendChild(widget.element);
+                    widget.fromJSON(widgetJSON);
 
                     if (parseInt(widget.element.style.zIndex, 10) > Widget.highestZIndex) {
                         Widget.highestZIndex = parseInt(widget.element.style.zIndex, 10) + 1;
@@ -68,12 +127,33 @@ class Widget {
         }
     }
 
+    static openWidgetSettings(id) {
+        const widget = Widget.allWidgets.find(widget => widget.element.id === id);
+        Widget.currentUpdatingWidget = widget;
+        if (widget) {
+            console.log(`Opening settings for widget: ${widget.element.id}`);
+            animateOpenModal(document.getElementById("modal"));
+        }
+
+        const input = document.getElementById("widgetTitle");
+        if (input) {
+            input.value = widget ? widget.element.querySelector('.widget-title').innerText : '';
+        }
+    }
+
+    static modalClose(action) {
+        const modal = document.getElementById("modal");
+        if (modal) {
+            animateCloseModal(modal);
+        }
+    }
+
     static _createHeader(id) {
         return `
             <div class="widget-header" id="${id + "-header"}">
-                <button class="widget-settings-button" id="${id + "-settings"}">⚙</button>
+                <button class="widget-header-button" id="${id + "-settings"}" onclick="openWidgetSettings('${id}')">⚙</button>
                 <div class="widget-title" id="${id + "-title"}">Widget</div>
-                <button class="widget-close-button" id="${id + "-close"}" onclick="closeWidget('${id}')">X</button>
+                <button class="widget-header-button" id="${id + "-close"}" onclick="closeWidget('${id}')">X</button>
             </div>
         `
     }
@@ -83,6 +163,12 @@ class Widget {
         this._element.id = "widget-" + (new Date()).getTime();
         this._element.style.position = "absolute";
         this._element.style.zIndex = Widget.highestZIndex++;
+
+        this._element.style.width = Widget.minSize * 1.5 + "px";
+        this._element.style.height = Widget.minSize + "px";
+
+        this._element.style.left = "0px";
+        this._element.style.top = "0px";
 
         this._element.innerHTML = `
             ${Widget._createHeader(this._element.id)}
@@ -166,7 +252,7 @@ class Widget {
         let newHeight = this._originalHeight + (clientY - this._originalClientY);
 
         newWidth = Math.max(Widget.minSize, newWidth);
-        newHeight = Math.max(Widget.minSize, newHeight);
+        newHeight = Math.max(Widget.minSize * 0.5, newHeight);
 
         if (this._element.style.cursor === "e-resize") {
             this._element.style.width = newWidth + "px";
@@ -207,7 +293,8 @@ class Widget {
             width: this._element.style.width || computedStyle.width,
             height: this._element.style.height || computedStyle.height,
             id: this._element.id,
-            zIndex: this._element.style.zIndex
+            zIndex: this._element.style.zIndex,
+            contentClassName: this.contentClassName
         };
     }
 
@@ -220,15 +307,69 @@ class Widget {
         this._element.style.position = "absolute";
         this._element.id = data.id || "widget-" + (new Date()).getTime();
         this._element.style.zIndex = data.zIndex || Widget.highestZIndex++;
+        if (data.contentClassName) {
+            const contentClass = allWidgetContents.find(c => c.name == data.contentClassName);
+            if (!contentClass) {
+                console.warn(`Content class not found: ${data.contentClassName}`);
+            } else {
+                this.setContent(contentClass);
+            }
+        }
     }
 
     get element() {
         return this._element;
     }
 
+    get id() {
+        return this._element.id;
+    }
+
     toString() {
         return JSON.stringify(this.toJSON());
+    }
+
+    setTitle(title) {
+        const titleElement = document.getElementById(this._element.id + "-title");
+        if (titleElement) {
+            titleElement.innerText = title;
+        } else {
+            console.warn(`Title element not found for widget with ID: ${this._element.id}`);
+        }
+
+        Widget.saveWidgets();
+    }
+
+    setContent(contentClass) {
+        this.contentClassName = contentClass.name;
+        const contentElement = document.getElementById(this._element.id + "-content");
+        if (contentElement) {
+            contentElement.innerHTML = new contentClass(this._element.id).toString();
+        } else {
+            console.log(this._element.innerHTML);
+            console.warn(`Content element not found for widget with ID: ${this._element.id}`);
+        }
+
+        Widget.saveWidgets();
+    }
+
+    getContent() {
+        return document.getElementById(this._element.id + "-content");
+    }
+
+}
+
+class WidgetContent {
+    constructor(widgetId, updateFunction = null, interval = 1000) {
+        this._widgetId = widgetId;
+        this._updateFunction = updateFunction;
+
+        if (!this._updateFunction || !widgetId) return;
+        this._interval = setInterval(() => {
+            this._updateFunction(Widget.allWidgets.find(widget => widget.element.id === this._widgetId));
+        }, interval);
     }
 }
 
 export default Widget;
+export { Widget, WidgetContent, allWidgetContents };
