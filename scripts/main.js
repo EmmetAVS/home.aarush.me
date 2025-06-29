@@ -1,4 +1,4 @@
-import Widget from "./widget.js"
+import {Widget, animateOpenModal, animateCloseModal} from "./widget.js"
 window.closeWidget = (id) => {
     Widget.closeWidget(id);
 };
@@ -20,19 +20,76 @@ window.updateWidgetColors = () => {
     Widget.updateColors();
 }
 
+window.openBackgroundModal = openBackgroundModal;
+
+window.closeBackgroundModal = closeBackgroundModal;
+
 window.updateWidgetHeaderVisibility = Widget.updateWidgetHeaderVisibility
 
-const main = () => {
+window.updateBackground = updateBackground;
+
+window.selectBackground = selectBackground;
+
+let backgrounds;
+
+function setBackgroundsForModal() {
+    const backgroundSelect = document.getElementById("backgrounds");
+    backgroundSelect.innerHTML = "";
+
+    for (const background of backgrounds) {
+        backgroundSelect.innerHTML += `
+            <div onclick="selectBackground('${background}')" class="modal-widget-content-option background-option" style="background-image: url(./assets/backgrounds/${background});"></div>
+        `;
+    }
+}
+
+function main() {
 
     fetch("backgrounds.json")
     .then(response => response.json())
     .then(data => {
-        document.body.style.backgroundImage = `url(./assets/backgrounds/${data[Math.floor(Math.random() * data.length)]})`;
+        backgrounds = data;
+        if (!localStorage.getItem("background")) {
+            document.body.style.backgroundImage = `url(./assets/backgrounds/${data[Math.floor(Math.random() * data.length)]})`;
+        } else {
+            document.body.style.backgroundImage = localStorage.getItem("background");
+        }
+        setBackgroundsForModal();
     })
 
 
     if (Widget.loadWidgets()) {
         return;
+    }
+}
+
+function openBackgroundModal() {
+    console.log("Opening background modal");
+    animateOpenModal(document.getElementById("backgroundModal"));
+    document.getElementById("keepBackground").value = localStorage.getItem("background") ? 2 : 1;
+}
+
+function closeBackgroundModal() {
+    console.log("Closing background modal");
+    animateCloseModal(document.getElementById("backgroundModal"));
+}
+
+function updateBackground() {
+    const keepBackground = document.getElementById("keepBackground").value == 2;
+    if (keepBackground) {
+        localStorage.setItem("background", document.body.style.backgroundImage);
+    } else {
+        localStorage.removeItem("background");
+    }
+}
+
+function selectBackground(background) {
+    document.body.style.backgroundImage = `url(./assets/backgrounds/${background})`;
+
+    document.getElementById("keepBackground").value = 2;
+
+    if (document.getElementById("keepBackground").value == 2) {
+        localStorage.setItem("background", document.body.style.backgroundImage);
     }
 }
 

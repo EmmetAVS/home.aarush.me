@@ -65,3 +65,11 @@
 .widget-content, .widget-content * {
     color: inherit;
 }
+
+.background-modal-keep-background {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 50%;
+    gap: 1rem;
+}

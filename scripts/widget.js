@@ -534,4 +534,4 @@ class WidgetContent {
 }
 
 export default Widget;
-export { Widget, WidgetContent, allWidgetContents };
+export { Widget, WidgetContent, allWidgetContents, animateOpenModal, animateCloseModal };
