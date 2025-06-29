@@ -65,6 +65,7 @@ class SearchBarWidgetContent extends WidgetContent {
         padding-top: 0.25rem;
         padding-bottom: 0.25rem;
         background-color: rgba(255, 255, 255, 0.2);
+        color: inherit;
         border-color: rgba(0, 0, 0, 0.2);
         border-style: solid;
         border-radius: var(--radius);
