@@ -87,17 +87,6 @@ class ClockWidgetContent extends WidgetContent {
     }
 }
 
-class CalendarWidgetContent extends WidgetContent {
-    constructor(widgetId) {
-        super(widgetId);
-        this._content = "Calendar Widget Content";
-    }
-
-    toString() {
-        return `<div style="background-color: black; width: 100%; height: 100%;">${Math.random()}</div>`
-    }
-}
-
 class SearchBarWidgetContent extends WidgetContent {
 
     static possibleSearchEngines = [
@@ -223,6 +212,5 @@ class SearchBarWidgetContent extends WidgetContent {
     }
 }
 
-allWidgetContents.push(CalendarWidgetContent);
 allWidgetContents.push(ClockWidgetContent);
 allWidgetContents.push(SearchBarWidgetContent);
