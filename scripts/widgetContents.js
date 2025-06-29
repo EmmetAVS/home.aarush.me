@@ -212,5 +212,189 @@ class SearchBarWidgetContent extends WidgetContent {
     }
 }
 
+class BookmarkBarWidgetContent extends WidgetContent {
+    static style = `
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 0.5rem 0;
+    `;
+
+    constructor(widgetId) {
+        super(widgetId);
+        this.bookmarks = [];
+        if (widgetId) {
+            const widget = Widget.allWidgets.find(w => w.id === widgetId);
+            if (widget) {
+                if (!widget.data.bookmarks) {
+                    widget.data.bookmarks = [];
+                }
+                this.bookmarks = widget.data.bookmarks;
+            }
+        }
+    }
+
+    toString() {
+        const bookmarks = this.bookmarks || [];
+        return `<div style="${BookmarkBarWidgetContent.style}">
+            ${bookmarks.map((bm, i) => `
+                <a href="${bm.url}" target="_blank" style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: rgba(255,255,255,0.15);
+                    color: inherit;
+                    border-radius: var(--radius);
+                    padding: 0.5rem 1.5rem;
+                    margin-bottom: 0.5rem;
+                    text-decoration: none;
+                    font-weight: 500;
+                    border: 1px solid rgba(0,0,0,0.1);
+                    width: 100%;
+                    word-break: break-word;
+                    white-space: normal;">
+                    ${bm.name}
+                </a>`).join('')}
+        </div>`;
+    }
+
+    customOptions() {
+        const widget = Widget.allWidgets.find(w => w.id === this._widgetId);
+        if (!widget) return document.createElement("div");
+        const options = document.createElement("div");
+        options.style.display = "flex";
+        options.style.flexDirection = "column";
+        options.style.gap = "0.5rem";
+        options.style.width = "100%";
+        options.style.maxHeight = "200px";
+        options.style.overflowY = "auto";
+
+        // List bookmarks with edit and remove buttons
+        widget.data.bookmarks.forEach((bm, i) => {
+            const row = document.createElement("div");
+            row.style.display = "flex";
+            row.style.alignItems = "center";
+            row.style.gap = "0.5rem";
+
+            const nameInput = document.createElement("input");
+            nameInput.type = "text";
+            nameInput.value = bm.name;
+            nameInput.style.flex = "1";
+            nameInput.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+            nameInput.style.color = "inherit";
+            nameInput.style.borderRadius = "var(--radius)";
+            nameInput.style.padding = "0.25rem 0.5rem";
+            nameInput.style.border = "none";
+            nameInput.onchange = () => {
+                bm.name = nameInput.value;
+                Widget.saveWidgets();
+            };
+
+            const urlInput = document.createElement("input");
+            urlInput.type = "text";
+            urlInput.value = bm.url;
+            urlInput.style.flex = "2";
+            urlInput.style.padding = "0.25rem 0.5rem";
+            urlInput.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+            urlInput.style.color = "inherit";
+            urlInput.style.borderRadius = "var(--radius)";
+            urlInput.style.border = "none";
+            urlInput.onchange = () => {
+                bm.url = urlInput.value;
+                Widget.saveWidgets();
+            };
+
+            const removeBtn = document.createElement("button");
+            removeBtn.innerText = "Remove";
+            removeBtn.style.background = "rgba(255,0,0,0.1)";
+            removeBtn.style.color = "inherit";
+            removeBtn.style.border = "none";
+            removeBtn.style.borderRadius = "var(--radius)";
+            removeBtn.style.cursor = "pointer";
+            removeBtn.onclick = () => {
+                widget.data.bookmarks.splice(i, 1);
+                Widget.saveWidgets();
+                this._reload();
+                const parent = options.parentElement;
+                if (parent) {
+                    parent.replaceChild(this.customOptions(), options);
+                }
+            };
+
+            row.appendChild(nameInput);
+            row.appendChild(urlInput);
+            row.appendChild(removeBtn);
+            options.appendChild(row);
+        });
+
+        const addRow = document.createElement("div");
+        addRow.style.display = "flex";
+        addRow.style.alignItems = "center";
+        addRow.style.gap = "0.5rem";
+
+        const newName = document.createElement("input");
+        newName.type = "text";
+        newName.placeholder = "Name";
+        newName.style.flex = "1";
+        newName.style.padding = "0.25rem 0.5rem";
+        newName.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+        newName.style.color = "inherit";
+        newName.style.borderRadius = "var(--radius)";
+        newName.style.border = "none";
+
+        const newUrl = document.createElement("input");
+        newUrl.type = "text";
+        newUrl.placeholder = "URL (https://...)";
+        newUrl.style.flex = "2";
+        newUrl.style.padding = "0.25rem 0.5rem";
+        newUrl.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+        newUrl.style.color = "inherit";
+        newUrl.style.borderRadius = "var(--radius)";
+        newUrl.style.border = "none";
+
+        const addBtn = document.createElement("button");
+        addBtn.innerText = "Add";
+        addBtn.style.background = "rgba(0,255,0,0.1)";
+        addBtn.style.color = "inherit";
+        addBtn.style.border = "none";
+        addBtn.style.borderRadius = "var(--radius)";
+        addBtn.style.cursor = "pointer";
+        addBtn.onclick = () => {
+            if (newName.value.trim() && newUrl.value.trim()) {
+                widget.data.bookmarks.push({ name: newName.value.trim(), url: newUrl.value.trim() });
+                Widget.saveWidgets();
+                this._reload();
+                const parent = options.parentElement;
+                if (parent) {
+                    parent.replaceChild(this.customOptions(), options);
+                }
+                newName.value = "";
+                newUrl.value = "";
+            }
+        };
+
+        addRow.appendChild(newName);
+        addRow.appendChild(newUrl);
+        addRow.appendChild(addBtn);
+        options.appendChild(addRow);
+
+        return options;
+    }
+
+    _reload() {
+        const contentElement = document.getElementById(this._widgetId + "-content");
+        if (contentElement) {
+            contentElement.innerHTML = this.toString();
+        }
+    }
+}
+
 allWidgetContents.push(ClockWidgetContent);
 allWidgetContents.push(SearchBarWidgetContent);
+allWidgetContents.push(BookmarkBarWidgetContent);
