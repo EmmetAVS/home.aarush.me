@@ -34,10 +34,6 @@ const main = () => {
     if (Widget.loadWidgets()) {
         return;
     }
-
-    let w = new Widget();
-
-    document.body.appendChild(w.element);
 }
 
 window.onload = main;
