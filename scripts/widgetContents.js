@@ -37,7 +37,7 @@ class ClockWidgetContent extends WidgetContent {
 
         const Weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
         const now = new Date()
-        const hours = JSON.stringify(now.getHours()).padStart(2, '0')
+        const hours = JSON.stringify(now.getHours() % 12).padStart(2, '0')
         const seconds = JSON.stringify(now.getSeconds()).padStart(2, '0')
         const minutes = JSON.stringify(now.getMinutes()).padStart(2, '0')
         const DatetimeText = `${Weekdays[now.getDay()]} ${now.getMonth()+1}/${now.getDate()}/${now.getFullYear()}, ${hours}:${minutes}:${seconds}`
