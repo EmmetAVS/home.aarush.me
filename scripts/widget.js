@@ -57,6 +57,29 @@ function handleWidgetModalStartup() {
     }
 }
 
+function hexToRgba(hex, alpha) {
+    hex = hex.replace('#', '');
+    if (hex.length === 3) {
+        hex = hex.split('').map(x => x + x).join('');
+    }
+    const num = parseInt(hex, 16);
+    const r = (num >> 16) & 255;
+    const g = (num >> 8) & 255;
+    const b = num & 255;
+    return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function rgbToHex(rgb) {
+    const result = rgb.match(/\d+/g);
+    if (!result) return "#000000";
+    return (
+        "#" +
+        ((1 << 24) + (parseInt(result[0]) << 16) + (parseInt(result[1]) << 8) + parseInt(result[2]))
+            .toString(16)
+            .slice(1)
+    );
+}
+
 class Widget {
     static currentUpdatingWidget = null;
     static distanceFromBorderToResize = 15;
@@ -64,6 +87,21 @@ class Widget {
     static minSize = 100;
     static highestZIndex = 1000;
     static headerVisible = true;
+
+    static updateColors() {
+        console.log("Updating widget colors");
+        const widget = Widget.currentUpdatingWidget;
+        if (!widget) return;
+
+        console.log("Updating widget colors");
+
+        widget.element.style.color = hexToRgba(document.getElementById("widgetColor").value, 1);
+        widget.element.style.backgroundColor = hexToRgba(document.getElementById("backgroundColor").value, 0.05);
+        widget.element.style.borderColor = hexToRgba(document.getElementById("widgetBorderColor").value, 0.15);
+        widget.element.style.setProperty('--widget-border-hover-color', hexToRgba(document.getElementById("widgetBorderColor").value, 0.3));
+        const input = document.getElementById("widgetTitle");
+        input.style.color = widget.element.style.color || "white";
+    }
 
     static updateWidgetHeaderVisibility() {
 
@@ -210,9 +248,15 @@ class Widget {
         }
 
         const input = document.getElementById("widgetTitle");
+        input.style.color = widget.element.style.color || "white";
         if (input) {
             input.value = widget ? widget.element.querySelector('.widget-title').innerText : '';
         }
+
+        const computed = window.getComputedStyle(widget.element);
+        document.getElementById("widgetColor").value = rgbToHex(computed.color);
+        document.getElementById("backgroundColor").value = rgbToHex(computed.backgroundColor);
+        document.getElementById("widgetBorderColor").value = rgbToHex(computed.borderColor);
     }
 
     static modalClose(action) {
@@ -382,6 +426,9 @@ class Widget {
             id: this._element.id,
             zIndex: this._element.style.zIndex,
             contentClassName: this.contentClassName,
+            widgetColor: this._element.style.color,
+            backgroundColor: this._element.style.backgroundColor,
+            widgetBorderColor: this._element.style.borderColor,
         };
     }
 
@@ -394,6 +441,10 @@ class Widget {
         this._element.style.position = "absolute";
         this._element.id = data.id || "widget-" + (new Date()).getTime();
         this._element.style.zIndex = data.zIndex || Widget.highestZIndex++;
+        this._element.style.color = data.widgetColor || "#ffffff";
+        this._element.style.backgroundColor = data.backgroundColor || hexToRgba("#000000", 0.05);
+        this._element.style.borderColor = data.widgetBorderColor || hexToRgba("#000000", 0.15);
+        this._element.style.setProperty('--widget-border-hover-color', data.widgetBorderColor || hexToRgba("#000000", 0.3));
         if (data.contentClassName) {
             const contentClass = allWidgetContents.find(c => c.name == data.contentClassName);
             if (!contentClass) {

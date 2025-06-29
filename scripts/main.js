@@ -16,6 +16,10 @@ window.modalClose = (action) => {
     Widget.modalClose(action);
 }
 
+window.updateWidgetColors = () => {
+    Widget.updateColors();
+}
+
 window.updateWidgetHeaderVisibility = Widget.updateWidgetHeaderVisibility
 
 const main = () => {

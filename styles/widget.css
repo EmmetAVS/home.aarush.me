@@ -1,6 +1,6 @@
 .widget {
     position: absolute;
-    border: 0.1rem solid rgba(0, 0, 0, 0.5);
+    border: 0.1rem solid rgba(0, 0, 0, 0.15);
     cursor: grab;
     border-radius: var(--radius);
     display: flex;
@@ -19,7 +19,7 @@
 }
 
 .widget:hover {
-    border-color: rgba(0, 0, 0, 1);
+    border-color: var(--widget-border-hover-color, rgba(0, 0, 0, 0.3));
 }
 
 .widget::-webkit-scrollbar {
@@ -39,7 +39,7 @@
 .widget-header-button {
     background-color: transparent;
     border: none;
-    color: var(--text);
+    color: inherit;
     cursor: pointer;
     font-size: 0.75rem;
     display: flex;
