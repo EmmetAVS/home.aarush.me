@@ -257,6 +257,11 @@ class Widget {
         document.getElementById("widgetColor").value = rgbToHex(computed.color);
         document.getElementById("backgroundColor").value = rgbToHex(computed.backgroundColor);
         document.getElementById("widgetBorderColor").value = rgbToHex(computed.borderColor);
+
+        const customOptions = document.getElementById("widgetCustomOptions");
+        customOptions.innerHTML = "";
+        if (widget.contentClassInstance) 
+            customOptions.appendChild(widget.contentClassInstance.customOptions());
     }
 
     static modalClose(action) {
@@ -303,6 +308,8 @@ class Widget {
         this._resizeInterval = null;
         this._mouseUpListener = null;
         this._moveInterval = null;
+
+        this.data = {};
 
         Widget.allWidgets.push(this);
 
@@ -429,6 +436,7 @@ class Widget {
             widgetColor: this._element.style.color,
             backgroundColor: this._element.style.backgroundColor,
             widgetBorderColor: this._element.style.borderColor,
+            data: this.data || {},
         };
     }
 
@@ -445,6 +453,7 @@ class Widget {
         this._element.style.backgroundColor = data.backgroundColor || hexToRgba("#000000", 0.05);
         this._element.style.borderColor = data.widgetBorderColor || hexToRgba("#000000", 0.15);
         this._element.style.setProperty('--widget-border-hover-color', data.widgetBorderColor || hexToRgba("#000000", 0.3));
+        this.data = data.data || {};
         if (data.contentClassName) {
             const contentClass = allWidgetContents.find(c => c.name == data.contentClassName);
             if (!contentClass) {
@@ -481,8 +490,9 @@ class Widget {
     setContent(contentClass) {
         this.contentClassName = contentClass.name;
         const contentElement = document.getElementById(this._element.id + "-content");
+        this.contentClassInstance = new contentClass(this._element.id);
         if (contentElement) {
-            contentElement.innerHTML = new contentClass(this._element.id).toString();
+            contentElement.innerHTML = this.contentClassInstance.toString();
         } else {
             console.log(this._element.innerHTML);
             console.warn(`Content element not found for widget with ID: ${this._element.id}`);
@@ -514,6 +524,12 @@ class WidgetContent {
                 return;
             }
         }, interval);
+    }
+
+    customOptions() {
+        const options = document.createElement("div");
+        options.style.display = "none";
+        return options;
     }
 }
 

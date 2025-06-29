@@ -34,6 +34,7 @@
     width: calc(100% - 2*min(5%, 1rem));
     padding-top: 0.1rem;
     padding-bottom: 0.25rem;
+    z-index: 5;
 }
 
 .widget-header-button {
