@@ -27,7 +27,7 @@ const main = () => {
     fetch("backgrounds.json")
     .then(response => response.json())
     .then(data => {
-        document.body.style.backgroundImage = `url(/assets/backgrounds/${data[Math.floor(Math.random() * data.length)]})`;
+        document.body.style.backgroundImage = `url(./assets/backgrounds/${data[Math.floor(Math.random() * data.length)]})`;
     })
 
 
