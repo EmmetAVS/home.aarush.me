@@ -89,11 +89,8 @@ class Widget {
     static headerVisible = true;
 
     static updateColors() {
-        console.log("Updating widget colors");
         const widget = Widget.currentUpdatingWidget;
         if (!widget) return;
-
-        console.log("Updating widget colors");
 
         widget.element.style.color = hexToRgba(document.getElementById("widgetColor").value, 1);
         widget.element.style.backgroundColor = hexToRgba(document.getElementById("backgroundColor").value, 0.05);
@@ -494,7 +491,6 @@ class Widget {
         if (contentElement) {
             contentElement.innerHTML = this.contentClassInstance.toString();
         } else {
-            console.log(this._element.innerHTML);
             console.warn(`Content element not found for widget with ID: ${this._element.id}`);
         }
 

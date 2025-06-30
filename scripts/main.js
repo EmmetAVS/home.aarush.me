@@ -41,6 +41,17 @@ function setBackgroundsForModal() {
             <div onclick="selectBackground('${background}')" class="modal-widget-content-option background-option" style="background-image: url(./assets/backgrounds/${background});"></div>
         `;
     }
+
+    document.getElementById("customBackground").value = localStorage.getItem("background").includes("./assets/backgrounds/") ? "" : localStorage.getItem("background");
+    document.getElementById("customBackground").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            document.body.style.backgroundImage = `url(${document.getElementById("customBackground").value})`;
+
+            document.getElementById("keepBackground").value = 2;
+
+            localStorage.setItem("background", document.body.style.backgroundImage);
+        }
+    })
 }
 
 function main() {
@@ -64,13 +75,11 @@ function main() {
 }
 
 function openBackgroundModal() {
-    console.log("Opening background modal");
     animateOpenModal(document.getElementById("backgroundModal"));
     document.getElementById("keepBackground").value = localStorage.getItem("background") ? 2 : 1;
 }
 
 function closeBackgroundModal() {
-    console.log("Closing background modal");
     animateCloseModal(document.getElementById("backgroundModal"));
 }
 
@@ -88,9 +97,7 @@ function selectBackground(background) {
 
     document.getElementById("keepBackground").value = 2;
 
-    if (document.getElementById("keepBackground").value == 2) {
-        localStorage.setItem("background", document.body.style.backgroundImage);
-    }
+    localStorage.setItem("background", document.body.style.backgroundImage);
 }
 
 window.onload = main;
