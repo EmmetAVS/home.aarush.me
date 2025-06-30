@@ -42,7 +42,8 @@ function setBackgroundsForModal() {
         `;
     }
 
-    document.getElementById("customBackground").value = localStorage.getItem("background").includes("./assets/backgrounds/") ? "" : localStorage.getItem("background");
+    if (localStorage.getItem("background"))
+        document.getElementById("customBackground").value = localStorage.getItem("background").includes("./assets/backgrounds/") ? "" : localStorage.getItem("background");
     document.getElementById("customBackground").addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
             document.body.style.backgroundImage = `url(${document.getElementById("customBackground").value})`;
