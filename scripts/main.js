@@ -43,7 +43,7 @@ function setBackgroundsForModal() {
     }
 
     if (localStorage.getItem("background"))
-        document.getElementById("customBackground").value = localStorage.getItem("background").includes("./assets/backgrounds/") ? "" : localStorage.getItem("background");
+        document.getElementById("customBackground").value = localStorage.getItem("background").includes("./assets/backgrounds/") ? "" : localStorage.getItem("background").split('"')[1];
     document.getElementById("customBackground").addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
             document.body.style.backgroundImage = `url(${document.getElementById("customBackground").value})`;
