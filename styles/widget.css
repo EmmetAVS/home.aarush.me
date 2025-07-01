@@ -73,3 +73,15 @@
     width: 50%;
     gap: 1rem;
 }
+
+.hidden-scrollbar {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0.5rem 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.hidden-scrollbar::-webkit-scrollbar {
+    display: none;
+}

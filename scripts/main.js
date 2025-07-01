@@ -89,6 +89,8 @@ function importSerializedData(b64) {
             localStorage.setItem(key, value);
         }
 
+        console.log("Expected window size:", localStorage.getItem("expectedWindowWidth"), "x", localStorage.getItem("expectedWindowHeight"));
+
         return true;
 
     } catch (e) {
@@ -147,9 +149,7 @@ function main() {
     })
 
 
-    if (Widget.loadWidgets()) {
-        return;
-    }
+    Widget.loadWidgets()
 }
 
 function openBackgroundModal() {

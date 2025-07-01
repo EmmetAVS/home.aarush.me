@@ -217,13 +217,22 @@ class BookmarkBarWidgetContent extends WidgetContent {
         width: 100%;
         height: 100%;
         display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0.5rem 0;
+    `;
+
+    static innerStyle = `
+        width: 100%;
+        max-height: 100%;
+        display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
         gap: 0.5rem;
         overflow-y: auto;
         overflow-x: hidden;
-        padding: 0.5rem 0;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     `;
 
     constructor(widgetId) {
@@ -243,24 +252,27 @@ class BookmarkBarWidgetContent extends WidgetContent {
     toString() {
         const bookmarks = this.bookmarks || [];
         return `<div style="${BookmarkBarWidgetContent.style}">
-            ${bookmarks.map((bm, i) => `
-                <a href="${bm.url}" target="_blank" style="
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: rgba(255,255,255,0.15);
-                    color: inherit;
-                    border-radius: var(--radius);
-                    padding: 0.5rem 1.5rem;
-                    margin-bottom: 0.5rem;
-                    text-decoration: none;
-                    font-weight: 500;
-                    border: 1px solid rgba(0,0,0,0.1);
-                    width: 100%;
-                    word-break: break-word;
-                    white-space: normal;">
-                    ${bm.name}
-                </a>`).join('')}
+            <div class="hidden-scrollbar" style="${BookmarkBarWidgetContent.innerStyle}">
+                ${bookmarks.map((bm, i) => `
+                    <a href="${bm.url}" target="_blank" style="
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background: rgba(255,255,255,0.15);
+                        color: inherit;
+                        border-radius: var(--radius);
+                        padding: 0.5rem 1.5rem;
+                        margin-bottom: 0.5rem;
+                        text-decoration: none;
+                        font-weight: 500;
+                        border: 1px solid rgba(0,0,0,0.1);
+                        width: 100%;
+                        word-break: break-word;
+                        white-space: normal;
+                        ">
+                        ${bm.name}
+                    </a>`).join('')}
+            </div>
         </div>`;
     }
 

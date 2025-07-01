@@ -88,6 +88,31 @@ class Widget {
     static highestZIndex = 1000;
     static headerVisible = true;
 
+    static handleWindowResize() {
+        const expectedHeight = parseInt(localStorage.getItem("expectedWindowHeight"), 10);
+        const expectedWidth = parseInt(localStorage.getItem("expectedWindowWidth"), 10);
+        const currentHeight = window.innerHeight;
+        const currentWidth = window.innerWidth;
+
+        const scaleFactorHeight = currentHeight / expectedHeight;
+        const scaleFactorWidth = currentWidth / expectedWidth;
+
+        for (const widget of Widget.allWidgets) {
+            const rect = widget.element.getBoundingClientRect();
+            const newLeft = rect.left * scaleFactorWidth;
+            const newTop = rect.top * scaleFactorHeight;
+            const newWidth = rect.width * scaleFactorWidth;
+            const newHeight = rect.height * scaleFactorHeight;
+
+            widget.element.style.left = newLeft + "px";
+            widget.element.style.top = newTop + "px";
+            widget.element.style.width = newWidth + "px";
+            widget.element.style.height = newHeight + "px";
+        }
+
+        Widget.saveWidgets();
+    }
+
     static updateColors() {
         const widget = Widget.currentUpdatingWidget;
         if (!widget) return;
@@ -177,6 +202,8 @@ class Widget {
         
         localStorage.setItem("widgets", JSON.stringify(widgetData));
         localStorage.setItem("widgetHeaderVisible", JSON.stringify(Widget.headerVisible));
+        localStorage.setItem("expectedWindowHeight", window.innerHeight);
+        localStorage.setItem("expectedWindowWidth", window.innerWidth);
     }
 
     static _startup() {
@@ -184,6 +211,8 @@ class Widget {
         handleWidgetModalStartup();
         document.getElementById("widgetContainer").innerHTML = "";
         Widget.allWidgets = [];
+
+        window.addEventListener('resize', Widget.handleWindowResize);
 
     }
 
@@ -193,6 +222,10 @@ class Widget {
         Widget.headerVisible = (localStorage.getItem("widgetHeaderVisible") === "true");
         if (widgetData) {
             try {
+
+                const originalHeight = localStorage.getItem("expectedWindowHeight") || window.innerHeight;
+                const originalWidth = localStorage.getItem("expectedWindowWidth") || window.innerWidth;
+
                 const widgets = JSON.parse(widgetData);
                 console.log('Loading widgets:', widgets);
                 for (const widgetJSON of widgets) {
@@ -215,14 +248,15 @@ class Widget {
                 }
 
                 Widget.applyHeaderVisibility();
+
+                localStorage.setItem("expectedWindowHeight", originalHeight);
+                localStorage.setItem("expectedWindowWidth", originalWidth);
+                Widget.handleWindowResize();
                 Widget.saveWidgets();
-                return true;
+                
             } catch (error) {
                 console.error('Error loading widgets:', error);
-                return false;
             }
-        } else {
-            return false;
         }
     }
 
