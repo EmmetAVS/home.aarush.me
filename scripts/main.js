@@ -9,7 +9,7 @@ window.openWidgetSettings = (id) => {
 
 window.createWidget = () => {
     let w = new Widget();
-    document.body.appendChild(w.element);
+    document.getElementById("widgetContainer").appendChild(w.element);
 }
 
 window.modalClose = (action) => {
