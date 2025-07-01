@@ -182,6 +182,8 @@ class Widget {
     static _startup() {
 
         handleWidgetModalStartup();
+        document.getElementById("widgetContainer").innerHTML = "";
+        Widget.allWidgets = [];
 
     }
 
@@ -195,7 +197,7 @@ class Widget {
                 console.log('Loading widgets:', widgets);
                 for (const widgetJSON of widgets) {
                     const widget = new Widget();
-                    document.body.appendChild(widget.element);
+                    document.getElementById("widgetContainer").appendChild(widget.element);
                     widget.fromJSON(widgetJSON);
 
                     if (parseInt(widget.element.style.zIndex, 10) > Widget.highestZIndex) {
@@ -230,7 +232,7 @@ class Widget {
         if (widget) {
             console.log(`Closing widget: ${widget.element.id}`);
             widget.handleClose();
-            document.body.removeChild(widget.element);
+            document.getElementById("widgetContainer").removeChild(widget.element);
             Widget.allWidgets.splice(index, 1);
             Widget.saveWidgets();
         }

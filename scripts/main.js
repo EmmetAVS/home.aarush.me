@@ -20,6 +20,10 @@ window.updateWidgetColors = () => {
     Widget.updateColors();
 }
 
+window.closeImportExportModal = () => {
+    animateCloseModal(document.getElementById("importExportModal"));
+}
+
 window.openBackgroundModal = openBackgroundModal;
 
 window.closeBackgroundModal = closeBackgroundModal;
@@ -30,7 +34,79 @@ window.updateBackground = updateBackground;
 
 window.selectBackground = selectBackground;
 
+window.openImportExportModal = openImportExportModal;
+
+window.importData = importData;
+
 let backgrounds;
+
+function addModalBackgroundListener() {
+    for (const background of document.getElementsByClassName("modal-background")) {
+        background.addEventListener("click", (e) => {
+            if (e.target === background) animateCloseModal(background);
+        });
+    }
+}
+
+function openImportExportModal(action) {
+    animateOpenModal(document.getElementById("importExportModal"));
+
+    if (action == "import") {
+        document.getElementById("importExportModalTitle").innerText = "Import Data";
+        document.getElementById("exportTextArea").value = "";
+        document.getElementById("exportTextArea").placeholder = "Paste your exported data here...";
+        document.getElementById("importButton").readonly = false;
+        document.getElementById("exportButton").style.display = "none";
+        document.getElementById("importButton").style.display = "flex";
+    } else if (action == "export") {
+        document.getElementById("importExportModalTitle").innerText = "Export Data";
+        document.getElementById("exportTextArea").value = serializeData();
+        document.getElementById("importButton").readonly = true;
+        document.getElementById("importButton").style.display = "none";
+        document.getElementById("exportButton").style.display = "flex";
+
+    }
+}
+
+function serializeData() {
+    const data = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        data[key] = localStorage.getItem(key);
+    }
+    const str = JSON.stringify(data);
+    return LZString.compressToBase64(str);
+}
+
+function importSerializedData(b64) {
+    try {
+
+        localStorage.clear();
+
+        const json = LZString.decompressFromBase64(b64);
+        const data = JSON.parse(json);
+        for (const [key, value] of Object.entries(data)) {
+            localStorage.setItem(key, value);
+        }
+
+        return true;
+
+    } catch (e) {
+        console.error("Failed to import data:", e);
+        return false;
+    }
+
+}
+
+function importData() {
+
+    if (importSerializedData(document.getElementById("exportTextArea").value)) {
+        console.log("Data imported successfully");
+        animateCloseModal(document.getElementById("importExportModal"));
+        main();
+    }
+
+}
 
 function setBackgroundsForModal() {
     const backgroundSelect = document.getElementById("backgrounds");
@@ -67,6 +143,7 @@ function main() {
             document.body.style.backgroundImage = localStorage.getItem("background");
         }
         setBackgroundsForModal();
+        addModalBackgroundListener();
     })
 
 
