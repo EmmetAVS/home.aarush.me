@@ -61,10 +61,6 @@ class ClockWidgetContent extends WidgetContent {
         fontSizeInput.value = this._fontSize.replace("rem", "");
         fontSizeInput.style.width = "4rem";
         fontSizeInput.style.padding = "0.25rem";
-        fontSizeInput.style.borderRadius = "var(--radius)";
-        fontSizeInput.style.border = "1px solid rgba(0, 0, 0, 0.2)";
-        fontSizeInput.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-        fontSizeInput.style.color = "inherit";
         fontSizeInput.onchange = () => {
             const newSize = fontSizeInput.value + "rem";
             const contentElement = document.getElementById(this._widgetId + "-content");
@@ -189,10 +185,6 @@ class SearchBarWidgetContent extends WidgetContent {
             button.style.margin = "0";
             button.style.width = "8rem";
             button.style.padding = "0.25rem 0.5rem";
-            button.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-            button.style.color = "inherit";
-            button.style.borderRadius = "var(--radius)";
-            button.style.border = "none";
             button.innerText = engine.name;
             button.onclick = () => {
                 this._input.value = "";
@@ -306,11 +298,7 @@ class BookmarkBarWidgetContent extends WidgetContent {
             nameInput.type = "text";
             nameInput.value = bm.name;
             nameInput.style.flex = "1";
-            nameInput.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-            nameInput.style.color = "inherit";
-            nameInput.style.borderRadius = "var(--radius)";
             nameInput.style.padding = "0.25rem 0.5rem";
-            nameInput.style.border = "none";
             nameInput.onchange = () => {
                 bm.name = nameInput.value;
                 Widget.saveWidgets();
@@ -321,10 +309,6 @@ class BookmarkBarWidgetContent extends WidgetContent {
             urlInput.value = bm.url;
             urlInput.style.flex = "2";
             urlInput.style.padding = "0.25rem 0.5rem";
-            urlInput.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-            urlInput.style.color = "inherit";
-            urlInput.style.borderRadius = "var(--radius)";
-            urlInput.style.border = "none";
             urlInput.onchange = () => {
                 bm.url = urlInput.value;
                 Widget.saveWidgets();
@@ -333,9 +317,6 @@ class BookmarkBarWidgetContent extends WidgetContent {
             const removeBtn = document.createElement("button");
             removeBtn.innerText = "Remove";
             removeBtn.style.background = "rgba(255,0,0,0.1)";
-            removeBtn.style.color = "inherit";
-            removeBtn.style.border = "none";
-            removeBtn.style.borderRadius = "var(--radius)";
             removeBtn.style.cursor = "pointer";
             removeBtn.onclick = () => {
                 widget.data.bookmarks.splice(i, 1);
@@ -363,27 +344,16 @@ class BookmarkBarWidgetContent extends WidgetContent {
         newName.placeholder = "Name";
         newName.style.flex = "1";
         newName.style.padding = "0.25rem 0.5rem";
-        newName.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-        newName.style.color = "inherit";
-        newName.style.borderRadius = "var(--radius)";
-        newName.style.border = "none";
 
         const newUrl = document.createElement("input");
         newUrl.type = "text";
         newUrl.placeholder = "URL (https://...)";
         newUrl.style.flex = "2";
         newUrl.style.padding = "0.25rem 0.5rem";
-        newUrl.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-        newUrl.style.color = "inherit";
-        newUrl.style.borderRadius = "var(--radius)";
-        newUrl.style.border = "none";
 
         const addBtn = document.createElement("button");
         addBtn.innerText = "Add";
         addBtn.style.background = "rgba(0,255,0,0.1)";
-        addBtn.style.color = "inherit";
-        addBtn.style.border = "none";
-        addBtn.style.borderRadius = "var(--radius)";
         addBtn.style.cursor = "pointer";
         addBtn.onclick = () => {
             if (newName.value.trim() && newUrl.value.trim()) {
@@ -518,10 +488,6 @@ class WeatherWidgetContent extends WidgetContent {
         const tempFormatSelect = document.createElement("select");
         tempFormatSelect.style.width = "10rem";
         tempFormatSelect.style.padding = "0.25rem";
-        tempFormatSelect.style.borderRadius = "var(--radius)";
-        tempFormatSelect.style.border = "1px solid rgba(0, 0, 0, 0.2)";
-        tempFormatSelect.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
-        tempFormatSelect.style.color = "inherit";
         tempFormatSelect.innerHTML = `
             <option style="background-color: rgba(0, 0, 0, 0.7); color: inherit;" value="F">Fahrenheit (°F)</option>
             <option style="background-color: rgba(0, 0, 0, 0.7); color: inherit;" value="C">Celsius (°C)</option>

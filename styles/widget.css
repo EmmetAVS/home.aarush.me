@@ -85,3 +85,17 @@
 .hidden-scrollbar::-webkit-scrollbar {
     display: none;
 }
+
+input, select {
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius);
+    color: inherit;
+}
+
+button {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: inherit;
+    border-radius: var(--radius);
+    border: none;
+}
