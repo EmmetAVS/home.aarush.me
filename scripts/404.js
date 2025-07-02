@@ -1,4 +1,4 @@
-let path = window.location.href.split("/").pop();
+let path = window.location.hash.substring(1);
 
 window.onload = () => {
     console.log("404 page loaded");

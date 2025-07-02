@@ -27,7 +27,7 @@ window.closeImportExportModal = () => {
 window.getLink = () => {
 
     const data = (document.getElementById('exportTextArea').value);
-    navigator.clipboard.writeText(window.location.href + data);
+    navigator.clipboard.writeText(window.location.href + "404.html#" + data);
 }
 
 window.openBackgroundModal = openBackgroundModal;
