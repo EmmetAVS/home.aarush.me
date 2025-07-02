@@ -250,6 +250,14 @@ class BookmarkBarWidgetContent extends WidgetContent {
     }
 
     toString() {
+        
+        if (this._widgetId == null) {
+            this.bookmarks = [
+                {name: "Example Bookmark", url: "https://example.com"},
+                {name: "Another Bookmark", url: "https://another-example.com"}
+            ]
+        }
+
         const bookmarks = this.bookmarks || [];
         return `<div style="${BookmarkBarWidgetContent.style}">
             <div class="hidden-scrollbar" style="${BookmarkBarWidgetContent.innerStyle}">
@@ -407,6 +415,89 @@ class BookmarkBarWidgetContent extends WidgetContent {
     }
 }
 
+class WeatherWidgetContent extends WidgetContent {
+    static style = `
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto;
+        gap: 0.5rem;
+    `;
+
+    static weatherCodeInformation = {"0":{"day":{"description":"Sunny","image":"http://openweathermap.org/img/wn/01d@2x.png"},"night":{"description":"Clear","image":"http://openweathermap.org/img/wn/01n@2x.png"}},"1":{"day":{"description":"Mainly Sunny","image":"http://openweathermap.org/img/wn/01d@2x.png"},"night":{"description":"Mainly Clear","image":"http://openweathermap.org/img/wn/01n@2x.png"}},"2":{"day":{"description":"Partly Cloudy","image":"http://openweathermap.org/img/wn/02d@2x.png"},"night":{"description":"Partly Cloudy","image":"http://openweathermap.org/img/wn/02n@2x.png"}},"3":{"day":{"description":"Cloudy","image":"http://openweathermap.org/img/wn/03d@2x.png"},"night":{"description":"Cloudy","image":"http://openweathermap.org/img/wn/03n@2x.png"}},"45":{"day":{"description":"Foggy","image":"http://openweathermap.org/img/wn/50d@2x.png"},"night":{"description":"Foggy","image":"http://openweathermap.org/img/wn/50n@2x.png"}},"48":{"day":{"description":"Rime Fog","image":"http://openweathermap.org/img/wn/50d@2x.png"},"night":{"description":"Rime Fog","image":"http://openweathermap.org/img/wn/50n@2x.png"}},"51":{"day":{"description":"Light Drizzle","image":"http://openweathermap.org/img/wn/09d@2x.png"},"night":{"description":"Light Drizzle","image":"http://openweathermap.org/img/wn/09n@2x.png"}},"53":{"day":{"description":"Drizzle","image":"http://openweathermap.org/img/wn/09d@2x.png"},"night":{"description":"Drizzle","image":"http://openweathermap.org/img/wn/09n@2x.png"}},"55":{"day":{"description":"Heavy Drizzle","image":"http://openweathermap.org/img/wn/09d@2x.png"},"night":{"description":"Heavy Drizzle","image":"http://openweathermap.org/img/wn/09n@2x.png"}},"56":{"day":{"description":"Light Freezing Drizzle","image":"http://openweathermap.org/img/wn/09d@2x.png"},"night":{"description":"Light Freezing Drizzle","image":"http://openweathermap.org/img/wn/09n@2x.png"}},"57":{"day":{"description":"Freezing Drizzle","image":"http://openweathermap.org/img/wn/09d@2x.png"},"night":{"description":"Freezing Drizzle","image":"http://openweathermap.org/img/wn/09n@2x.png"}},"61":{"day":{"description":"Light Rain","image":"http://openweathermap.org/img/wn/10d@2x.png"},"night":{"description":"Light Rain","image":"http://openweathermap.org/img/wn/10n@2x.png"}},"63":{"day":{"description":"Rain","image":"http://openweathermap.org/img/wn/10d@2x.png"},"night":{"description":"Rain","image":"http://openweathermap.org/img/wn/10n@2x.png"}},"65":{"day":{"description":"Heavy Rain","image":"http://openweathermap.org/img/wn/10d@2x.png"},"night":{"description":"Heavy Rain","image":"http://openweathermap.org/img/wn/10n@2x.png"}},"66":{"day":{"description":"Light Freezing Rain","image":"http://openweathermap.org/img/wn/10d@2x.png"},"night":{"description":"Light Freezing Rain","image":"http://openweathermap.org/img/wn/10n@2x.png"}},"67":{"day":{"description":"Freezing Rain","image":"http://openweathermap.org/img/wn/10d@2x.png"},"night":{"description":"Freezing Rain","image":"http://openweathermap.org/img/wn/10n@2x.png"}},"71":{"day":{"description":"Light Snow","image":"http://openweathermap.org/img/wn/13d@2x.png"},"night":{"description":"Light Snow","image":"http://openweathermap.org/img/wn/13n@2x.png"}},"73":{"day":{"description":"Snow","image":"http://openweathermap.org/img/wn/13d@2x.png"},"night":{"description":"Snow","image":"http://openweathermap.org/img/wn/13n@2x.png"}},"75":{"day":{"description":"Heavy Snow","image":"http://openweathermap.org/img/wn/13d@2x.png"},"night":{"description":"Heavy Snow","image":"http://openweathermap.org/img/wn/13n@2x.png"}},"77":{"day":{"description":"Snow Grains","image":"http://openweathermap.org/img/wn/13d@2x.png"},"night":{"description":"Snow Grains","image":"http://openweathermap.org/img/wn/13n@2x.png"}},"80":{"day":{"description":"Light Showers","image":"http://openweathermap.org/img/wn/09d@2x.png"},"night":{"description":"Light Showers","image":"http://openweathermap.org/img/wn/09n@2x.png"}},"81":{"day":{"description":"Showers","image":"http://openweathermap.org/img/wn/09d@2x.png"},"night":{"description":"Showers","image":"http://openweathermap.org/img/wn/09n@2x.png"}},"82":{"day":{"description":"Heavy Showers","image":"http://openweathermap.org/img/wn/09d@2x.png"},"night":{"description":"Heavy Showers","image":"http://openweathermap.org/img/wn/09n@2x.png"}},"85":{"day":{"description":"Light Snow Showers","image":"http://openweathermap.org/img/wn/13d@2x.png"},"night":{"description":"Light Snow Showers","image":"http://openweathermap.org/img/wn/13n@2x.png"}},"86":{"day":{"description":"Snow Showers","image":"http://openweathermap.org/img/wn/13d@2x.png"},"night":{"description":"Snow Showers","image":"http://openweathermap.org/img/wn/13n@2x.png"}},"95":{"day":{"description":"Thunderstorm","image":"http://openweathermap.org/img/wn/11d@2x.png"},"night":{"description":"Thunderstorm","image":"http://openweathermap.org/img/wn/11n@2x.png"}},"96":{"day":{"description":"Light Thunderstorms With Hail","image":"http://openweathermap.org/img/wn/11d@2x.png"},"night":{"description":"Light Thunderstorms With Hail","image":"http://openweathermap.org/img/wn/11n@2x.png"}},"99":{"day":{"description":"Thunderstorm With Hail","image":"http://openweathermap.org/img/wn/11d@2x.png"},"night":{"description":"Thunderstorm With Hail","image":"http://openweathermap.org/img/wn/11n@2x.png"}}};
+
+    constructor(widgetId) {
+        super(widgetId);
+        this._content = "Weather Widget Content";
+
+        this._temperatureFormat = "F";
+        if (widgetId == null) return;
+
+        
+    }
+
+    async _getPosition() {
+        return new Promise((resolve, reject) => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        resolve(position);
+                    },
+                    error => {
+                        reject(error);
+                    }
+                );
+            } else {
+                reject(new Error("Geolocation is not supported by this browser."));
+            }
+        });
+    }
+
+    async _fetchWeatherData() {
+        const position = await this._getPosition();
+        console.log("Position:", position);
+        this._latitude = position.coords.latitude;
+        this._longitude = position.coords.longitude;
+
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${this._latitude}&longitude=${this._longitude}&current=temperature_2m,is_day,precipitation,rain,showers,snowfall,weather_code`);
+        if (!response.ok) {
+            console.error("Failed to fetch weather data:", response.statusText);
+        }
+        return await response.json();
+
+    }
+
+    async _generateWeatherContent() {
+
+        const data = (await this._fetchWeatherData()).current;
+        const { temperature_2m, is_day, precipitation, rain, showers, snowfall, weather_code } = data;
+
+        const info = WeatherWidgetContent.weatherCodeInformation[weather_code][is_day ? "day" : "night"];
+        const temp = this._temperatureFormat === "F" ? (temperature_2m * 9/5) + 32 : temperature_2m;
+        const imgTag = `<img draggable="false" style="width: auto; height: 190%;" src="${info.image}" alt="${info['description']}">`;
+        console.log(info);
+        const html = `
+            <div class="centered-vertically centered-horizontally" style="width: 80%; height: 80%;">${imgTag}</div>
+            <p style="margin: 0;">${info['description']}, Temperature: ${Math.round(temp * 100) / 100}°${this._temperatureFormat}</p>
+        `
+
+        document.getElementById(this._widgetId + '-weather-content').innerHTML = html;
+    }
+
+    toString() {
+
+        if (!this._widgetId) {
+            return `<div style="${WeatherWidgetContent.style}">Weather Widget</div>`;
+        }
+
+        this._generateWeatherContent();
+        return `<div id="${this._widgetId + '-weather-content'}" class="hidden-scrollbar" style="${WeatherWidgetContent.style}">Loading...</div>`;
+    }
+}
+
 allWidgetContents.push(ClockWidgetContent);
 allWidgetContents.push(SearchBarWidgetContent);
 allWidgetContents.push(BookmarkBarWidgetContent);
+allWidgetContents.push(WeatherWidgetContent);
