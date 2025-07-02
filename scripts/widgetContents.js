@@ -434,6 +434,8 @@ class WeatherWidgetContent extends WidgetContent {
 
         this._temperatureFormat = "F";
         if (widgetId == null) return;
+        const widget = Widget.allWidgets.find(w => w.id === widgetId);
+        this._temperatureFormat = widget.data["temperatureFormat"] || "F";
 
         
     }
@@ -489,11 +491,56 @@ class WeatherWidgetContent extends WidgetContent {
     toString() {
 
         if (!this._widgetId) {
-            return `<div style="${WeatherWidgetContent.style}">Weather Widget</div>`;
+            const info = WeatherWidgetContent.weatherCodeInformation["0"]["day"];
+            const temp = 50;
+            const imgTag = `<img draggable="false" style="width: auto; height: 190%;" src="${info.image}" alt="${info['description']}">`;
+            console.log(info);
+            const html = `
+                <div class="centered-vertically centered-horizontally" style="width: 80%; height: 80%;">${imgTag}</div>
+                <p style="margin: 0;">${info['description']}, Temperature: ${Math.round(temp * 100) / 100}°${this._temperatureFormat}</p>
+            `
+            return `<div class="hidden-scrollbar" style="${WeatherWidgetContent.style}">${html}</div>`;
         }
 
         this._generateWeatherContent();
         return `<div id="${this._widgetId + '-weather-content'}" class="hidden-scrollbar" style="${WeatherWidgetContent.style}">Loading...</div>`;
+    }
+
+    customOptions() {
+        const options = document.createElement("div");
+        options.style.display = "flex";
+        options.style.flexDirection = "column";
+        options.style.gap = "0.5rem";
+        options.style.width = "100%";
+
+        const tempFormatLabel = document.createElement("label");
+        tempFormatLabel.innerText = "Temperature Format:";
+        const tempFormatSelect = document.createElement("select");
+        tempFormatSelect.style.width = "10rem";
+        tempFormatSelect.style.padding = "0.25rem";
+        tempFormatSelect.style.borderRadius = "var(--radius)";
+        tempFormatSelect.style.border = "1px solid rgba(0, 0, 0, 0.2)";
+        tempFormatSelect.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+        tempFormatSelect.style.color = "inherit";
+        tempFormatSelect.innerHTML = `
+            <option style="background-color: rgba(0, 0, 0, 0.7); color: inherit;" value="F">Fahrenheit (°F)</option>
+            <option style="background-color: rgba(0, 0, 0, 0.7); color: inherit;" value="C">Celsius (°C)</option>
+        `;
+        tempFormatSelect.value = this._temperatureFormat;
+        tempFormatSelect.onchange = () => {
+            this._temperatureFormat = tempFormatSelect.value;
+            this._generateWeatherContent();
+            const widget = Widget.allWidgets.find(w => w.id === this._widgetId);
+            if (widget) {
+                widget.data["temperatureFormat"] = this._temperatureFormat;
+                Widget.saveWidgets();
+            }
+        };
+
+        options.appendChild(tempFormatLabel);
+        options.appendChild(tempFormatSelect);
+
+        return options;
     }
 }
 
