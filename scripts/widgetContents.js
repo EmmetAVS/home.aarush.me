@@ -66,7 +66,6 @@ class ClockWidgetContent extends WidgetContent {
             const contentElement = document.getElementById(this._widgetId + "-content");
             if (contentElement) {
                 contentElement.style.fontSize = newSize;
-                console.log("Font size changed to:", newSize);
                 this._fontSize = newSize;
             }
             const widget = Widget.allWidgets.find(w => w.id === this._widgetId);
@@ -161,7 +160,6 @@ class SearchBarWidgetContent extends WidgetContent {
     }
 
     inputEventListener(event) {
-        console.log(event);
         if (event.key == "Enter") {
             const inputValue = this._input.value;
             if (inputValue.trim() === "") return;
@@ -429,7 +427,6 @@ class WeatherWidgetContent extends WidgetContent {
 
     async _fetchWeatherData() {
         const position = await this._getPosition();
-        console.log("Position:", position);
         this._latitude = position.coords.latitude;
         this._longitude = position.coords.longitude;
 
@@ -449,7 +446,6 @@ class WeatherWidgetContent extends WidgetContent {
         const info = WeatherWidgetContent.weatherCodeInformation[weather_code][is_day ? "day" : "night"];
         const temp = this._temperatureFormat === "F" ? (temperature_2m * 9/5) + 32 : temperature_2m;
         const imgTag = `<img draggable="false" style="width: auto; height: 190%;" src="${info.image}" alt="${info['description']}">`;
-        console.log(info);
         const html = `
             <div class="centered-vertically centered-horizontally" style="width: 80%; height: 80%;">${imgTag}</div>
             <p style="margin: 0;">${info['description']}, Temperature: ${Math.round(temp * 100) / 100}°${this._temperatureFormat}</p>
@@ -464,7 +460,6 @@ class WeatherWidgetContent extends WidgetContent {
             const info = WeatherWidgetContent.weatherCodeInformation["0"]["day"];
             const temp = 50;
             const imgTag = `<img draggable="false" style="width: auto; height: 190%;" src="${info.image}" alt="${info['description']}">`;
-            console.log(info);
             const html = `
                 <div class="centered-vertically centered-horizontally" style="width: 80%; height: 80%;">${imgTag}</div>
                 <p style="margin: 0;">${info['description']}, Temperature: ${Math.round(temp * 100) / 100}°${this._temperatureFormat}</p>
@@ -510,7 +505,172 @@ class WeatherWidgetContent extends WidgetContent {
     }
 }
 
+class StocksWidgetContent extends WidgetContent {
+    static style = `
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto;
+        gap: 0.5rem;
+    `;
+
+    static async getPrice(ticker) {
+        const response = await fetch(`https://corsproxy.io/?https://api.nasdaq.com/api/quote/${ticker}/info?assetclass=stocks`);
+        const data = await response.json();
+        return data.data.primaryData;
+    }
+
+    static async getPrices(tickers) {
+        const promises = tickers.map(ticker => StocksWidgetContent.getPrice(ticker));
+        return Promise.all(promises);
+    }
+
+    constructor(widgetId) {
+        super(widgetId, 10000);
+        this._content = "Stocks Widget Content";
+
+        this._widget = Widget.allWidgets.find(w => w.id === widgetId);
+        if (this._widget && this._widget.data && this._widget.data.tickers) {
+        } else if (this._widget && this._widget.data) {
+            this._widget.data.tickers = [];
+        }
+    }
+
+    toString() {
+        return `<div class="hidden-scrollbar" style="${StocksWidgetContent.style}" id="${this._widgetId + '-stocks-content'}">Loading Stocks...</div>`;
+    }
+
+    _update() {
+        this._updateAsync();
+    }
+
+    async _updateAsync() {
+        const contentElement = document.getElementById(this._widgetId + '-stocks-content');
+        if (contentElement) {
+            if (!this._widget) return false;
+            let html = "";
+            for (const ticker of this._widget.data.tickers) {
+                try {
+                    const priceData = await StocksWidgetContent.getPrice(ticker)
+                    const priceElement = document.createElement("div");
+                    priceElement.style.display = "flex";
+                    priceElement.style.justifyContent = "center";
+                    priceElement.style.width = "100%";
+                    priceElement.style.padding = "0.25rem 0";
+                    priceElement.innerHTML = `
+                        <span>${ticker}: $${Math.round(Number(priceData.lastSalePrice.slice(1)) * 100)/100 || "N/A"}</span>
+                    `;
+                    html += (priceElement.outerHTML);
+                } catch (error) {
+                    console.error(`Failed to fetch price for ${ticker}:`, error);
+                }
+            }
+            contentElement.innerHTML = html;
+        }
+    }
+
+    customOptions() {
+        const options = document.createElement("div");
+        options.style.display = "flex";
+        options.style.flexDirection = "column";
+        options.style.width = "100%";
+        options.style.gap = "0.5rem";
+
+        const span = document.createElement("span");
+        span.innerText = "Tickers:";
+        span.style.textAlign = "left";
+
+        const tickers = document.createElement("div");
+        tickers.style.display = "flex";
+        tickers.style.width = "100%";
+        tickers.style.gap = "1rem";
+        tickers.style.flexWrap = "wrap";
+        tickers.style.overflowY = "auto";
+        tickers.classList.add("hidden-scrollbar");
+        tickers.classList.add("centered-vertically");
+        tickers.classList.add("centered-horizontally");
+
+        for (const ticker of this._widget.data.tickers) {
+            const tickerElement = document.createElement("div");
+
+            tickerElement.style.display = "flex";
+            tickerElement.style.alignItems = "center";
+            tickerElement.style.gap = "0.5rem";
+            tickerElement.style.padding = "0.5rem";
+
+            const tickerTextElement = document.createElement("div");
+            tickerTextElement.innerText = ticker;
+            tickerElement.appendChild(tickerTextElement);
+
+            const removeButton = document.createElement("button");
+            removeButton.innerText = "X";
+
+            removeButton.onclick = () => {
+                this._widget.data.tickers = this._widget.data.tickers.filter(t => t !== ticker);
+                tickers.removeChild(tickerElement);
+                Widget.saveWidgets();
+            }
+
+            tickerElement.appendChild(removeButton);
+
+            tickers.appendChild(tickerElement);
+        }
+
+        const label = document.createElement("label");
+        label.innerText = "Add Ticker:";
+        label.style.textAlign = "left";
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = "Add a ticker";
+        input.style.width = "30%";
+
+        input.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+
+                this._widget.data.tickers.push(input.value.trim().toUpperCase());
+                const ticker = input.value.trim().toUpperCase();
+                const tickerElement = document.createElement("div");
+
+                tickerElement.style.display = "flex";
+                tickerElement.style.alignItems = "center";
+                tickerElement.style.gap = "0.5rem";
+                tickerElement.style.padding = "0.5rem";
+
+                const tickerTextElement = document.createElement("div");
+                tickerTextElement.innerText = ticker;
+                tickerElement.appendChild(tickerTextElement);
+
+                const removeButton = document.createElement("button");
+                removeButton.innerText = "X";
+
+                removeButton.onclick = () => {
+                    this._widget.data.tickers = this._widget.data.tickers.filter(t => t !== ticker);
+                    tickers.removeChild(tickerElement);
+                    Widget.saveWidgets();
+                }
+
+                tickerElement.appendChild(removeButton);
+
+                tickers.appendChild(tickerElement);
+                input.value = "";
+
+            }
+        });
+
+        options.appendChild(span);
+        options.appendChild(tickers);
+        options.appendChild(label);
+        options.appendChild(input);
+
+        return options;
+    }
+}
+
 allWidgetContents.push(ClockWidgetContent);
 allWidgetContents.push(SearchBarWidgetContent);
 allWidgetContents.push(BookmarkBarWidgetContent);
 allWidgetContents.push(WeatherWidgetContent);
+allWidgetContents.push(StocksWidgetContent);
