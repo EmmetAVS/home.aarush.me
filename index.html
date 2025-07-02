@@ -75,8 +75,13 @@
                 <div class="modal-content">
                     <div class="import-export-options">
                         <textarea id="exportTextArea" placeholder="Exported widgets will appear here..."></textarea>
-                        <button id="exportButton" onclick="navigator.clipboard.writeText(document.getElementById('exportTextArea').value);">Copy</button>
-                        <button id="importButton" onclick="importData()">Save</button>
+                        <div class="import-export-button-container">
+                            <div>
+                                <button id="exportButton" onclick="navigator.clipboard.writeText(document.getElementById('exportTextArea').value);">Copy</button>
+                                <button id="importButton" onclick="importData()">Save</button>
+                            </div>
+                            <button id="getLinkButton" onclick="getLink()"><img src="./assets/copy-link.png"></button>
+                        </div>
                     </div>
                 </div>
             </div>

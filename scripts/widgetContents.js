@@ -530,7 +530,7 @@ class StocksWidgetContent extends WidgetContent {
     }
 
     constructor(widgetId) {
-        super(widgetId, 10000);
+        super(widgetId, 15000);
         this._content = "Stocks Widget Content";
 
         this._widget = Widget.allWidgets.find(w => w.id === widgetId);
@@ -541,6 +541,7 @@ class StocksWidgetContent extends WidgetContent {
     }
 
     toString() {
+        this._updateAsync();
         return `<div class="hidden-scrollbar" style="${StocksWidgetContent.style}" id="${this._widgetId + '-stocks-content'}">Loading Stocks...</div>`;
     }
 

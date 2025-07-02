@@ -24,6 +24,12 @@ window.closeImportExportModal = () => {
     animateCloseModal(document.getElementById("importExportModal"));
 }
 
+window.getLink = () => {
+
+    const data = (document.getElementById('exportTextArea').value);
+    navigator.clipboard.writeText(window.location.href + data);
+}
+
 window.openBackgroundModal = openBackgroundModal;
 
 window.closeBackgroundModal = closeBackgroundModal;
@@ -37,6 +43,8 @@ window.selectBackground = selectBackground;
 window.openImportExportModal = openImportExportModal;
 
 window.importData = importData;
+
+window.importSerializedData = importSerializedData;
 
 let backgrounds;
 
@@ -81,11 +89,12 @@ function serializeData() {
 function importSerializedData(b64) {
     try {
 
-        localStorage.clear();
-
         const json = LZString.decompressFromBase64(b64);
         const data = JSON.parse(json);
-        for (const [key, value] of Object.entries(data)) {
+        const obj = Object.entries(data);
+        localStorage.clear();
+
+        for (const [key, value] of obj) {
             localStorage.setItem(key, value);
         }
 
@@ -178,4 +187,4 @@ function selectBackground(background) {
     localStorage.setItem("background", document.body.style.backgroundImage);
 }
 
-window.onload = main;
+if (!window.onload) window.onload = main;

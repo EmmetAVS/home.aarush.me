@@ -254,3 +254,27 @@ body {
     align-items: center;
     justify-content: center;
 }
+
+.import-export-button-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: auto;
+}
+
+.import-export-button-container > button, .import-export-button-container > div > button {
+
+    height: 2rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+button > img {
+    height: 100%;
+    width: 100%;
+}
