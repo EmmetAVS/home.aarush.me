@@ -551,26 +551,34 @@ class StocksWidgetContent extends WidgetContent {
 
     async _updateAsync() {
         const contentElement = document.getElementById(this._widgetId + '-stocks-content');
-        if (contentElement) {
-            if (!this._widget) return false;
-            let html = "";
-            for (const ticker of this._widget.data.tickers) {
+        if (!contentElement || !this._widget || !this._widget.data || !this._widget.data.tickers || this._widget.data.tickers.length === 0) {
+            return;
+        }
+        try {
+            const tickerPromises = this._widget.data.tickers.map(async ticker => {
                 try {
-                    const priceData = await StocksWidgetContent.getPrice(ticker)
-                    const priceElement = document.createElement("div");
-                    priceElement.style.display = "flex";
-                    priceElement.style.justifyContent = "center";
-                    priceElement.style.width = "100%";
-                    priceElement.style.padding = "0.25rem 0";
-                    priceElement.innerHTML = `
-                        <span>${ticker}: $${Math.round(Number(priceData.lastSalePrice.slice(1)) * 100)/100 || "N/A"}</span>
-                    `;
-                    html += (priceElement.outerHTML);
+                    const priceData = await StocksWidgetContent.getPrice(ticker);
+                    const price = Math.round(Number(priceData.lastSalePrice.slice(1)) * 100) / 100 || "N/A";
+                    return { ticker, price, success: true };
                 } catch (error) {
                     console.error(`Failed to fetch price for ${ticker}:`, error);
+                    return { ticker, price: "N/A", success: false };
                 }
-            }
+            });
+            
+            const results = await Promise.all(tickerPromises);
+            
+            const html = results.map(({ ticker, price }) => `
+                <div style="display: flex; justify-content: center; width: 100%; padding: 0.25rem 0;">
+                    <span>${ticker}: $${price}</span>
+                </div>
+            `).join('');
+            
             contentElement.innerHTML = html;
+            
+        } catch (error) {
+            console.error('Error updating stocks:', error);
+            contentElement.innerHTML = '<div>Error loading stock data</div>';
         }
     }
 
