@@ -46,8 +46,10 @@ function handleWidgetModalStartup() {
         const contentClass = allWidgetContents[i];
         const content = new contentClass(null);
         const element = document.createElement("div");
-        element.className = "modal-widget-content-option";
-        element.innerHTML = content.toString();
+        element.style.display = "flex";
+        element.style.flexDirection = "column";
+        element.style.gap = "0.3rem";
+        element.innerHTML = `<span>${contentClass.name.replace("WidgetContent", "")}</span><div class="modal-widget-content-option">${content.toString()}</div>`;
         element.onclick = () => {
             Widget.currentUpdatingWidget.setContent(contentClass);
             animateCloseModal(document.getElementById("modal"));

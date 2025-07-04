@@ -66,12 +66,14 @@ function openImportExportModal(action) {
         document.getElementById("importButton").readonly = false;
         document.getElementById("exportButton").style.display = "none";
         document.getElementById("importButton").style.display = "flex";
+        document.getElementById("getLinkButton").style.display = "none";
     } else if (action == "export") {
         document.getElementById("importExportModalTitle").innerText = "Export Data";
         document.getElementById("exportTextArea").value = serializeData();
         document.getElementById("importButton").readonly = true;
         document.getElementById("importButton").style.display = "none";
         document.getElementById("exportButton").style.display = "flex";
+        document.getElementById("getLinkButton").style.display = "flex";
 
     }
 }
