@@ -456,15 +456,11 @@ class Widget {
     }
 
     toJSON() {
-        const rect = this._element.getBoundingClientRect();
-        const computedStyle = window.getComputedStyle(this._element);
-        
         return {
-            html: this._element.innerHTML,
-            left: this._element.style.left || computedStyle.left,
-            top: this._element.style.top || computedStyle.top,
-            width: this._element.style.width || computedStyle.width,
-            height: this._element.style.height || computedStyle.height,
+            left: this._element.style.left,
+            top: this._element.style.top,
+            width: this._element.style.width,
+            height: this._element.style.height,
             id: this._element.id,
             zIndex: this._element.style.zIndex,
             contentClassName: this.contentClassName,
@@ -472,28 +468,34 @@ class Widget {
             backgroundColor: this._element.style.backgroundColor,
             widgetBorderColor: this._element.style.borderColor,
             data: this.data || {},
+            title: this._element.querySelector('.widget-title')?.innerText || 'Widget'
         };
     }
 
     fromJSON(data) {
-        this._element.innerHTML = data.html || "New Widget!";
+        this._element.id = data.id || "widget-" + (new Date()).getTime();
+        this._element.innerHTML = `
+            ${Widget._createHeader(this._element.id)}
+            <div class="widget-content" id="${this._element.id + "-content"}"></div>
+        `;
         this._element.style.left = data.left || "0px";
         this._element.style.top = data.top || "0px";
         this._element.style.width = data.width || "10rem";
         this._element.style.height = data.height || "5rem";
-        this._element.style.position = "absolute";
-        this._element.id = data.id || "widget-" + (new Date()).getTime();
         this._element.style.zIndex = data.zIndex || Widget.highestZIndex++;
         this._element.style.color = data.widgetColor || "#ffffff";
         this._element.style.backgroundColor = data.backgroundColor || hexToRgba("#000000", 0.05);
         this._element.style.borderColor = data.widgetBorderColor || hexToRgba("#000000", 0.15);
         this._element.style.setProperty('--widget-border-hover-color', data.widgetBorderColor || hexToRgba("#000000", 0.3));
+        
         this.data = data.data || {};
+        if (data.title && data.title !== 'Widget') {
+            this.setTitle(data.title);
+        }
+        
         if (data.contentClassName) {
             const contentClass = allWidgetContents.find(c => c.name == data.contentClassName);
-            if (!contentClass) {
-                console.warn(`Content class not found: ${data.contentClassName}`);
-            } else {
+            if (contentClass) {
                 this.setContent(contentClass);
             }
         }
