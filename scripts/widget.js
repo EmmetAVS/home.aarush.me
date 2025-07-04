@@ -457,18 +457,18 @@ class Widget {
 
     toJSON() {
         return {
-            left: this._element.style.left,
-            top: this._element.style.top,
-            width: this._element.style.width,
-            height: this._element.style.height,
+            l: this._element.style.left,
+            t: this._element.style.top,
+            w: this._element.style.width,
+            h: this._element.style.height,
             id: this._element.id,
-            zIndex: this._element.style.zIndex,
-            contentClassName: this.contentClassName,
-            widgetColor: this._element.style.color,
-            backgroundColor: this._element.style.backgroundColor,
-            widgetBorderColor: this._element.style.borderColor,
-            data: this.data || {},
-            title: this._element.querySelector('.widget-title')?.innerText || 'Widget'
+            z: this._element.style.zIndex,
+            ccn: this.contentClassName,
+            wc: this._element.style.color,
+            bc: this._element.style.backgroundColor,
+            wbc: this._element.style.borderColor,
+            d: this.data || {},
+            ti: this._element.querySelector('.widget-title')?.innerText || 'Widget'
         };
     }
 
@@ -478,21 +478,24 @@ class Widget {
             ${Widget._createHeader(this._element.id)}
             <div class="widget-content" id="${this._element.id + "-content"}"></div>
         `;
-        this._element.style.left = data.left || "0px";
-        this._element.style.top = data.top || "0px";
-        this._element.style.width = data.width || "10rem";
-        this._element.style.height = data.height || "5rem";
-        this._element.style.zIndex = data.zIndex || Widget.highestZIndex++;
-        this._element.style.color = data.widgetColor || "#ffffff";
-        this._element.style.backgroundColor = data.backgroundColor || hexToRgba("#000000", 0.05);
-        this._element.style.borderColor = data.widgetBorderColor || hexToRgba("#000000", 0.15);
-        this._element.style.setProperty('--widget-border-hover-color', data.widgetBorderColor || hexToRgba("#000000", 0.3));
-        
-        this.data = data.data || {};
+        this._element.style.left = data.l || data.left || "0px";
+        this._element.style.top = data.t || data.top || "0px";
+        this._element.style.width = data.w || data.width || "10rem";
+        this._element.style.height = data.h || data.height || "5rem";
+        this._element.style.zIndex = data.z || data.zIndex || Widget.highestZIndex++;
+        this._element.style.color = data.wc || data.widgetColor || "#ffffff";
+        this._element.style.backgroundColor = data.bc || data.backgroundColor || hexToRgba("#000000", 0.05);
+        this._element.style.borderColor = data.wbc || data.widgetBorderColor || hexToRgba("#000000", 0.15);
+        this._element.style.setProperty('--widget-border-hover-color', data.wbc || data.widgetBorderColor || hexToRgba("#000000", 0.3));
+
+        this.data = data.d || data.data || {};
+        data.title = data.title || data.t || 'Widget';
         if (data.title && data.title !== 'Widget') {
             this.setTitle(data.title);
         }
         
+        data.contentClassName = data.contentClassName || data.ccn || null;
+
         if (data.contentClassName) {
             const contentClass = allWidgetContents.find(c => c.name == data.contentClassName);
             if (contentClass) {
