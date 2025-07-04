@@ -489,7 +489,7 @@ class Widget {
         this._element.style.setProperty('--widget-border-hover-color', data.wbc || data.widgetBorderColor || hexToRgba("#000000", 0.3));
 
         this.data = data.d || data.data || {};
-        data.title = data.title || data.t || 'Widget';
+        data.title = data.title || data.ti || 'Widget';
         if (data.title && data.title !== 'Widget') {
             this.setTitle(data.title);
         }
