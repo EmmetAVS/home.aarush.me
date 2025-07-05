@@ -9,6 +9,7 @@ body {
     justify-content: center;
     color: var(--text);
     font-family: 'Roboto', sans-serif;
+    overflow: hidden;
 }
 
 .control-panel {
