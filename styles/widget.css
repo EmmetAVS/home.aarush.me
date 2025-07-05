@@ -66,14 +66,6 @@
     color: inherit;
 }
 
-.background-modal-keep-background {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 50%;
-    gap: 1rem;
-}
-
 .hidden-scrollbar {
     overflow-y: auto;
     overflow-x: hidden;

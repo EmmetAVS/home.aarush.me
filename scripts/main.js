@@ -46,7 +46,7 @@ window.importData = importData;
 
 window.importSerializedData = importSerializedData;
 
-let backgrounds;
+let backgrounds, backgroundElement;
 
 function addModalBackgroundListener() {
     for (const background of document.getElementsByClassName("modal-background")) {
@@ -135,26 +135,34 @@ function setBackgroundsForModal() {
         document.getElementById("customBackground").value = localStorage.getItem("background").includes("./assets/backgrounds/") ? "" : localStorage.getItem("background").split('"')[1];
     document.getElementById("customBackground").addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
-            document.body.style.backgroundImage = `url(${document.getElementById("customBackground").value})`;
+            backgroundElement.style.backgroundImage = `url(${document.getElementById("customBackground").value})`;
 
             document.getElementById("keepBackground").value = 2;
 
-            localStorage.setItem("background", document.body.style.backgroundImage);
+            localStorage.setItem("background", backgroundElement.style.backgroundImage);
         }
     })
 }
 
 function main() {
 
+    backgroundElement = document.getElementById("backgroundImage");
+
     fetch("backgrounds.json")
     .then(response => response.json())
     .then(data => {
         backgrounds = data;
         if (!localStorage.getItem("background")) {
-            document.body.style.backgroundImage = `url(./assets/backgrounds/${data[Math.floor(Math.random() * data.length)]})`;
+            backgroundElement.style.backgroundImage = `url(./assets/backgrounds/${data[Math.floor(Math.random() * data.length)]})`;
         } else {
-            document.body.style.backgroundImage = localStorage.getItem("background");
+            backgroundElement.style.backgroundImage = localStorage.getItem("background");
         }
+
+        if (!localStorage.getItem("backgroundOpacity")) {
+            localStorage.setItem("backgroundOpacity", 90);
+        }
+        backgroundElement.style.opacity = localStorage.getItem("backgroundOpacity") / 100;
+        document.getElementById("backgroundOpacity").value = localStorage.getItem("backgroundOpacity");
         setBackgroundsForModal();
         addModalBackgroundListener();
     })
@@ -175,18 +183,22 @@ function closeBackgroundModal() {
 function updateBackground() {
     const keepBackground = document.getElementById("keepBackground").value == 2;
     if (keepBackground) {
-        localStorage.setItem("background", document.body.style.backgroundImage);
+        localStorage.setItem("background", backgroundElement.style.backgroundImage);
     } else {
         localStorage.removeItem("background");
     }
+
+    const backgroundOpacity = document.getElementById("backgroundOpacity").value;
+    localStorage.setItem("backgroundOpacity", backgroundOpacity);
+    backgroundElement.style.opacity = backgroundOpacity / 100;
 }
 
 function selectBackground(background) {
-    document.body.style.backgroundImage = `url(./assets/backgrounds/${background})`;
+    backgroundElement.style.backgroundImage = `url(./assets/backgrounds/${background})`;
 
     document.getElementById("keepBackground").value = 2;
 
-    localStorage.setItem("background", document.body.style.backgroundImage);
+    localStorage.setItem("background", backgroundElement.style.backgroundImage);
 }
 
 if (!window.onload) window.onload = main;
