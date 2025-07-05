@@ -361,6 +361,8 @@ class Widget {
         if (event.type === 'mouseenter') {
             this._hoverInterval = setInterval(() => this.handleHover(), 50);
         } else if (event.type === 'mouseleave') {
+            clearInterval(this._hoverInterval);
+            this._hoverInterval = null;
             this._element.style.cursor = "default";
         }
 
