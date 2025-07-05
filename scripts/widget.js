@@ -339,16 +339,50 @@ class Widget {
         this._element.classList.add("widget");
         this._element.addEventListener('mousedown', (event) => { this.mouseDownEvent(event) });
         this._element.addEventListener('mouseup', (event) => { this.mouseUpEvent(event) });
-        
+        this._element.addEventListener('mouseenter', (event) => { this.hoverEvent(event) });
+        this._element.addEventListener('mouseleave', (event) => { this.hoverEvent(event) });
+
         this._resizeInterval = null;
         this._mouseUpListener = null;
         this._moveInterval = null;
+        this._hoverInterval = null;
 
         this.data = {};
 
         Widget.allWidgets.push(this);
 
         Widget.saveWidgets();
+    }
+
+    hoverEvent(event) {
+    
+        if (this._isMoving || this._isResizing) return;
+
+        if (event.type === 'mouseenter') {
+            this._hoverInterval = setInterval(() => this.handleHover(), 50);
+        } else if (event.type === 'mouseleave') {
+            this._element.style.cursor = "default";
+        }
+
+    }
+
+    handleHover() {
+
+        const rect = this._element.getBoundingClientRect();
+        
+        const rightEdgeResize = rect.right - clientX <= Widget.distanceFromBorderToResize;
+        const bottomEdgeResize = rect.bottom - clientY <= Widget.distanceFromBorderToResize
+
+        if (rightEdgeResize && bottomEdgeResize) {
+            this._element.style.cursor = "se-resize";
+        } else if (rightEdgeResize) {
+            this._element.style.cursor = "e-resize";
+        } else if (bottomEdgeResize) {
+            this._element.style.cursor = "s-resize";
+        } else {
+            this._element.style.cursor = "grab";
+        }
+
     }
 
     handleClose() {
