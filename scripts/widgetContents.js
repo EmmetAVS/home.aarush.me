@@ -50,7 +50,6 @@ class ClockWidgetContent extends WidgetContent {
         const timeText = `${hours}:${minutes}:${seconds} ${PMAM}`
         const dateText = `${Weekdays[now.getDay()]}, ${now.getDate()} ${monthText}`
         const DatetimeText = `${timeText} ${dateText}`
-        console.log(fontSize);
 
         return `
         <div style="${ClockWidgetContent.style}; font-size: ${fontSize}">
@@ -229,6 +228,7 @@ class BookmarkBarWidgetContent extends WidgetContent {
     static innerStyle = `
         width: 100%;
         max-height: 100%;
+        height: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -237,6 +237,7 @@ class BookmarkBarWidgetContent extends WidgetContent {
         overflow-x: hidden;
         scrollbar-width: none;
         -ms-overflow-style: none;
+        justify-content: space-between;
     `;
 
     constructor(widgetId) {
@@ -267,20 +268,9 @@ class BookmarkBarWidgetContent extends WidgetContent {
             <div class="hidden-scrollbar" style="${BookmarkBarWidgetContent.innerStyle}">
                 ${bookmarks.map((bm, i) => `
                     <a href="${bm.url}" target="_blank" style="
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        background: rgba(255,255,255,0.15);
-                        color: inherit;
-                        border-radius: var(--radius);
                         padding: 0.5rem 1.5rem;
-                        margin-bottom: 0.5rem;
                         text-decoration: none;
-                        font-weight: 500;
-                        border: 1px solid rgba(0,0,0,0.1);
                         width: 100%;
-                        word-break: break-word;
-                        white-space: normal;
                         ">
                         ${bm.name}
                     </a>`).join('')}

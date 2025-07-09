@@ -1,6 +1,6 @@
 .widget {
     position: absolute;
-    border: 0.1rem solid rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.15);
     cursor: grab;
     border-radius: var(--radius);
     display: flex;
@@ -78,16 +78,29 @@
     display: none;
 }
 
-input, select {
+input, select, button, a {
     border: 1px solid rgba(0, 0, 0, 0.2);
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: var(--radius);
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: calc(var(--radius) / 1.25);
     color: inherit;
 }
 
+a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    word-break: break-word;
+    white-space: normal;
+}
+
 button {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: inherit;
-    border-radius: var(--radius);
     border: none;
+}
+
+button:hover, a:hover {
+    background: rgba(255,255,255,0.225);
+}
+
+a:hover {
+    font-weight: bold;
 }
