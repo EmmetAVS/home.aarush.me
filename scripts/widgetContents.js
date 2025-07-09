@@ -9,6 +9,8 @@ class ClockWidgetContent extends WidgetContent {
         display: flex;
         justify-content: center;
         align-items: center;
+        flex-direction: column;
+        color: inherit;
     
     `
 
@@ -18,7 +20,7 @@ class ClockWidgetContent extends WidgetContent {
         this._fontSize = "1.5rem";
         const widget = Widget.allWidgets.find(w => w.id === widgetId);
         if (widget && widget.data && widget.data.fontSize) {
-            this._fontSize = widget.data.fontSize;
+            this._fontSize = widget.data.fontSize || "1.5rem";
         }
 
         if (widget) {
@@ -35,16 +37,26 @@ class ClockWidgetContent extends WidgetContent {
 
     toString() {
 
+        const fontSize = this._fontSize || "1.5rem";
         const Weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        const Months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
         const now = new Date()
         const curHours = now.getHours()
         const hours = JSON.stringify(curHours % 12 == 0 ? 12 : curHours % 12).padStart(2, '0')
         const seconds = JSON.stringify(now.getSeconds()).padStart(2, '0')
         const minutes = JSON.stringify(now.getMinutes()).padStart(2, '0')
         const PMAM = curHours >= 12 ? "PM" : "AM"
-        const DatetimeText = `${Weekdays[now.getDay()]} ${now.getMonth()+1}/${now.getDate()}/${now.getFullYear()}, ${hours}:${minutes}:${seconds} ${PMAM}`
+        const monthText = Months[now.getMonth()]
+        const timeText = `${hours}:${minutes}:${seconds} ${PMAM}`
+        const dateText = `${Weekdays[now.getDay()]}, ${now.getDate()} ${monthText}`
+        const DatetimeText = `${timeText} ${dateText}`
+        console.log(fontSize);
 
-        return `<div style="${ClockWidgetContent.style};font-size: ${this._fontSize}">${DatetimeText}</div>`;
+        return `
+        <div style="${ClockWidgetContent.style}; font-size: ${fontSize}">
+            <div>${timeText}</div>
+            <div style="font-size: ${(fontSize.replace("rem", "")/1.5)}rem">${dateText}</div>
+        </div>`;
     }
 
     customOptions() {
