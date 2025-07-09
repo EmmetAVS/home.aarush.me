@@ -564,6 +564,9 @@ class Widget {
     }
 
     setContent(contentClass) {
+        if (this.contentClassInstance) {
+            this.contentClassInstance.removeInterval();
+        }
         this.contentClassName = contentClass.name;
         const contentElement = document.getElementById(this._element.id + "-content");
         this.contentClassInstance = new contentClass(this._element.id);
@@ -599,6 +602,13 @@ class WidgetContent {
                 return;
             }
         }, interval);
+    }
+
+    removeInterval() {
+        if (this._interval) {
+            clearInterval(this._interval);
+            this._interval = null;
+        }
     }
 
     customOptions() {
