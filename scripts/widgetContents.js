@@ -552,7 +552,12 @@ class StocksWidgetContent extends WidgetContent {
     }
 
     async _updateAsync() {
-        const contentElement = document.getElementById(this._widgetId + '-stocks-content');
+        let contentElement = document.getElementById(this._widgetId + '-stocks-content');
+        const startWaitTime = Date.now();
+        while (!contentElement && Date.now() - startWaitTime < 5000) {
+            contentElement = document.getElementById(this._widgetId + '-stocks-content');
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
         if (!contentElement || !this._widget || !this._widget.data || !this._widget.data.tickers || this._widget.data.tickers.length === 0) {
             return;
         }
